@@ -24,7 +24,16 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 								MinecraftClient.getInstance().player.sendMessage(Text.of("Minestream message set to: " + MessageSpawner.getCurrentMessage()), false);
 							}
 							return 1;
-						}))));
+						})))
+				.then(ClientCommandManager.literal("stop")
+					.executes(context -> {
+						MessageSpawner.setCurrentMessage("");
+						 if (MinecraftClient.getInstance().player != null) {
+							 MinecraftClient.getInstance().player.sendMessage(Text.of("Minestream message stopped."), false);
+						 }
+						return 1;
+					}))
+			);
 		});
 
 		// Initialize the message spawner and renderer
