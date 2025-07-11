@@ -11,6 +11,8 @@ import net.minecraft.text.OrderedText;
 import org.joml.Matrix4f;
 
 import java.util.List;
+import takeyourminestream.modid.ModConfig;
+import takeyourminestream.modid.messages.MessageSpawner;
 
 public class MessageRenderer {
 
@@ -27,6 +29,16 @@ public class MessageRenderer {
 
             for (MessageSpawner.MessageDisplay message : activeMessages) {
                 matrices.push();
+
+                int tickCounter = MessageSpawner.getTickCounter();
+                int age = tickCounter - (int)message.spawnTick();
+                int fadeStart = ModConfig.MESSAGE_LIFETIME_TICKS;
+                int fadeEnd = ModConfig.MESSAGE_LIFETIME_TICKS + ModConfig.MESSAGE_FADEOUT_TICKS;
+                float alpha = 1.0f;
+                if (age > fadeStart) {
+                    float fadeProgress = (float)(age - fadeStart) / (float)ModConfig.MESSAGE_FADEOUT_TICKS;
+                    alpha = 1.0f - Math.min(Math.max(fadeProgress, 0.0f), 1.0f);
+                }
 
                 // Translate to the message position
                 matrices.translate(message.pos().getX() - client.gameRenderer.getCamera().getPos().getX(),
@@ -50,10 +62,12 @@ public class MessageRenderer {
 
                 // Render each line of the wrapped text
                 for (int i = 0; i < wrappedText.size(); i++) {
+                    int alphaInt = ((int)(255 * alpha)) << 24;
+                    int color = (0xFFFFFF) | alphaInt;
                     textRenderer.draw(wrappedText.get(i),
                                       0.0F, // x
                                       (float)i * textRenderer.fontHeight, // y, adjusted for each line
-                                      0xFFFFFFFF,
+                                     color,
                                       true,
                                       matrices.peek().getPositionMatrix(),
                                       consumers,

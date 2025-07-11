@@ -4,15 +4,20 @@ import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import takeyourminestream.modid.messages.MessageSpawner;
+import java.util.Random;
+import takeyourminestream.modid.ModConfig;
 
 public class TwitchChatClient {
 
     private TwitchClient twitchClient;
-    private final String twitchChannelName;
+    private final Random random = new Random();
 
     public TwitchChatClient(String channelName) {
-        this.twitchChannelName = channelName;
         initializeTwitchClient();
+    }
+
+    private String getRandomColor() {
+        return ModConfig.NICK_COLORS[random.nextInt(ModConfig.NICK_COLORS.length)];
     }
 
     private void initializeTwitchClient() {
@@ -29,11 +34,11 @@ public class TwitchChatClient {
             System.out.println("[" + event.getChannel().getName() + "] " + user + ": " + message);
             // Here we will pass the message to MessageSpawner
             // For now, we are just printing it to console for verification.
-            MessageSpawner.setCurrentMessage(user + ": " + message);
+            MessageSpawner.setCurrentMessage(getRandomColor() + user + ": §r" + message);
         });
 
-        twitchClient.getChat().joinChannel(twitchChannelName);
-        System.out.println("Joined Twitch channel: " + twitchChannelName);
+        twitchClient.getChat().joinChannel(ModConfig.TWITCH_CHANNEL_NAME);
+        System.out.println("Joined Twitch channel: " + ModConfig.TWITCH_CHANNEL_NAME);
     }
 
     public void disconnect() {

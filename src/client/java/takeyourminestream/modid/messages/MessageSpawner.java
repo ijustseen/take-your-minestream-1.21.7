@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import takeyourminestream.modid.ModConfig;
 
 public class MessageSpawner {
 
@@ -41,8 +42,8 @@ public class MessageSpawner {
                     activeMessages.add(new MessageDisplay(messageToDisplay, spawnPos, tickCounter)); // Add the message from the queue
                     lastMessageSpawnTime = tickCounter; // Update last spawn time
                 }
-                // Remove old messages (e.g., after 60 ticks or 3 seconds)
-                activeMessages.removeIf(message -> tickCounter - message.spawnTick > 60);
+                // Remove old messages (используем значение из ModConfig)
+                activeMessages.removeIf(message -> tickCounter - message.spawnTick > (ModConfig.MESSAGE_LIFETIME_TICKS + ModConfig.MESSAGE_FADEOUT_TICKS));
             }
         });
     }
@@ -60,6 +61,10 @@ public class MessageSpawner {
 
     public static List<MessageDisplay> getActiveMessages() {
         return activeMessages;
+    }
+
+    public static int getTickCounter() {
+        return tickCounter;
     }
 
     public record MessageDisplay(String text, Vec3d pos, long spawnTick) {}

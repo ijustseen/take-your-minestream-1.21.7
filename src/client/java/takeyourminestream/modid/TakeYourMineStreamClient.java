@@ -44,8 +44,8 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 					.then(ClientCommandManager.literal("start")
 						.executes(context -> {
 							if (twitchChatClient == null) {
-								MinecraftClient.getInstance().player.sendMessage(Text.of("Connecting to Twitch chat 'ijustseen_you'..."), false);
-								twitchChatClient = new TwitchChatClient("ijustseen_you");
+								MinecraftClient.getInstance().player.sendMessage(Text.of("Connecting to Twitch chat '" + ModConfig.TWITCH_CHANNEL_NAME + "'..."), false);
+								twitchChatClient = new TwitchChatClient(ModConfig.TWITCH_CHANNEL_NAME);
 								if (MinecraftClient.getInstance().player != null) {
 									MinecraftClient.getInstance().player.sendMessage(Text.of("Successfully connected!"), false);
 								}
@@ -79,6 +79,6 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 		new MessageRenderer();
 
 		// Initialize TwitchChatClient on mod start for the specified channel
-		twitchChatClient = new TwitchChatClient("ijustseen_you");
+		twitchChatClient = new TwitchChatClient(ModConfig.TWITCH_CHANNEL_NAME);
 	}
 }
