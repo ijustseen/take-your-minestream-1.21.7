@@ -7,6 +7,7 @@ import net.minecraft.client.render.LightmapTextureManager;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
+import net.minecraft.text.OrderedText;
 import org.joml.Matrix4f;
 
 import java.util.List;
@@ -38,23 +39,29 @@ public class MessageRenderer {
                 // Scale the text down and flip Y for upright rendering
                 matrices.scale(0.025f, -0.025f, 0.025f);
 
+                // Word wrap the text
+                List<OrderedText> wrappedText = textRenderer.wrapLines(Text.of(message.text()), 120); // 120 is approximately 3 blocks wide after scaling
+
+                // Calculate total height of the wrapped text
+                float totalTextHeight = wrappedText.size() * textRenderer.fontHeight;
+
                 // Center the text AFTER scaling (relative to the scaled space)
-                float textWidth = textRenderer.getWidth(Text.of(message.text()));
-                matrices.translate(-textWidth / 2.0f, -textRenderer.fontHeight / 2.0f, 0);
+                matrices.translate(-textRenderer.getWidth(wrappedText.get(0)) / 2.0f, -totalTextHeight / 2.0f, 0);
 
-                // Render the text
-                textRenderer.draw(Text.of(message.text()),
-                                  0.0F, // x
-                                  0.0F, // y
-                                  0xFFFFFFFF,
-                                  true,
-                                  matrices.peek().getPositionMatrix(),
-                                  consumers,
-                                  TextRenderer.TextLayerType.POLYGON_OFFSET,
-                                  0,
-                                  0xF000F0
-                                  );
-
+                // Render each line of the wrapped text
+                for (int i = 0; i < wrappedText.size(); i++) {
+                    textRenderer.draw(wrappedText.get(i),
+                                      0.0F, // x
+                                      (float)i * textRenderer.fontHeight, // y, adjusted for each line
+                                      0xFFFFFFFF,
+                                      true,
+                                      matrices.peek().getPositionMatrix(),
+                                      consumers,
+                                      TextRenderer.TextLayerType.POLYGON_OFFSET,
+                                      0,
+                                      0xF000F0
+                                      );
+                }
                 matrices.pop();
             }
         });
