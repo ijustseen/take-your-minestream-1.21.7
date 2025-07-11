@@ -8,7 +8,7 @@ import takeyourminestream.modid.messages.MessageSpawner;
 public class TwitchChatClient {
 
     private TwitchClient twitchClient;
-    private String twitchChannelName;
+    private final String twitchChannelName;
 
     public TwitchChatClient(String channelName) {
         this.twitchChannelName = channelName;
@@ -26,9 +26,9 @@ public class TwitchChatClient {
         twitchClient.getEventManager().onEvent(ChannelMessageEvent.class, event -> {
             String message = event.getMessage();
             String user = event.getUser().getName();
-            System.out.println(String.format("[%s] %s: %s", event.getChannel().getName(), user, message));
+            System.out.println("[" + event.getChannel().getName() + "] " + user + ": " + message);
             // Here we will pass the message to MessageSpawner
-            // For now, let's just print it to console to ensure it works.
+            // For now, we are just printing it to console for verification.
             MessageSpawner.setCurrentMessage(user + ": " + message);
         });
 

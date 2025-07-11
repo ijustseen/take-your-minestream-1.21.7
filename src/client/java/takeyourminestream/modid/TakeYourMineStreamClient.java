@@ -18,7 +18,7 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
 			dispatcher.register(ClientCommandManager.literal("minestream")
-				.then(ClientCommandManager.literal("message")
+				.then(ClientCommandManager.literal("test")
 					.then(ClientCommandManager.argument("message", StringArgumentType.greedyString())
 						.executes(context -> {
 							String message = StringArgumentType.getString(context, "message");
@@ -44,13 +44,14 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 					.then(ClientCommandManager.literal("start")
 						.executes(context -> {
 							if (twitchChatClient == null) {
+								MinecraftClient.getInstance().player.sendMessage(Text.of("Connecting to Twitch chat 'ijustseen_you'..."), false);
 								twitchChatClient = new TwitchChatClient("ijustseen_you");
 								if (MinecraftClient.getInstance().player != null) {
-									MinecraftClient.getInstance().player.sendMessage(Text.of("Подключение к Twitch чату 'ijustseen_you'..."), false);
+									MinecraftClient.getInstance().player.sendMessage(Text.of("Successfully connected!"), false);
 								}
 							} else {
 								if (MinecraftClient.getInstance().player != null) {
-									MinecraftClient.getInstance().player.sendMessage(Text.of("Уже подключен к Twitch чату."), false);
+									MinecraftClient.getInstance().player.sendMessage(Text.of("Already connected to Twitch chat."), false);
 								}
 							}
 							return 1;
@@ -61,11 +62,11 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 								twitchChatClient.disconnect();
 								twitchChatClient = null;
 								if (MinecraftClient.getInstance().player != null) {
-									MinecraftClient.getInstance().player.sendMessage(Text.of("Отключен от Twitch чата."), false);
+									MinecraftClient.getInstance().player.sendMessage(Text.of("Disconnected from Twitch chat."), false);
 								}
 							} else {
 								if (MinecraftClient.getInstance().player != null) {
-									MinecraftClient.getInstance().player.sendMessage(Text.of("Не подключен к Twitch чату."), false);
+									MinecraftClient.getInstance().player.sendMessage(Text.of("Not connected to Twitch chat."), false);
 								}
 							}
 							return 1;
