@@ -11,6 +11,8 @@ import takeyourminestream.modid.messages.MessageRenderer;
 
 public class TakeYourMineStreamClient implements ClientModInitializer {
 
+	private static TwitchChatClient twitchChatClient;
+
 	@Override
 	public void onInitializeClient() {
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
@@ -19,9 +21,10 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 				.then(ClientCommandManager.literal("message")
 					.then(ClientCommandManager.argument("message", StringArgumentType.greedyString())
 						.executes(context -> {
-							MessageSpawner.setCurrentMessage(StringArgumentType.getString(context, "message"));
+							String message = StringArgumentType.getString(context, "message");
+							MessageSpawner.setCurrentMessage(message);
 							if (MinecraftClient.getInstance().player != null) {
-								MinecraftClient.getInstance().player.sendMessage(Text.of("Minestream message set to: " + MessageSpawner.getCurrentMessage()), false);
+								MinecraftClient.getInstance().player.sendMessage(Text.of("Minestream message set to: " + message), false);
 							}
 							return 1;
 						})))
@@ -31,13 +34,50 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 						 if (MinecraftClient.getInstance().player != null) {
 							 MinecraftClient.getInstance().player.sendMessage(Text.of("Minestream message stopped."), false);
 						 }
+						 if (twitchChatClient != null) {
+                            twitchChatClient.disconnect();
+                            twitchChatClient = null;
+                        }
 						return 1;
 					}))
+				.then(ClientCommandManager.literal("twitch")
+					.then(ClientCommandManager.literal("start")
+						.executes(context -> {
+							if (twitchChatClient == null) {
+								twitchChatClient = new TwitchChatClient("ijustseen_you");
+								if (MinecraftClient.getInstance().player != null) {
+									MinecraftClient.getInstance().player.sendMessage(Text.of("Подключение к Twitch чату 'ijustseen_you'..."), false);
+								}
+							} else {
+								if (MinecraftClient.getInstance().player != null) {
+									MinecraftClient.getInstance().player.sendMessage(Text.of("Уже подключен к Twitch чату."), false);
+								}
+							}
+							return 1;
+						}))
+					.then(ClientCommandManager.literal("stop")
+						.executes(context -> {
+							if (twitchChatClient != null) {
+								twitchChatClient.disconnect();
+								twitchChatClient = null;
+								if (MinecraftClient.getInstance().player != null) {
+									MinecraftClient.getInstance().player.sendMessage(Text.of("Отключен от Twitch чата."), false);
+								}
+							} else {
+								if (MinecraftClient.getInstance().player != null) {
+									MinecraftClient.getInstance().player.sendMessage(Text.of("Не подключен к Twitch чату."), false);
+								}
+							}
+							return 1;
+						})))
 			);
 		});
 
 		// Initialize the message spawner and renderer
 		new MessageSpawner();
 		new MessageRenderer();
+
+		// Initialize TwitchChatClient on mod start for the specified channel
+		twitchChatClient = new TwitchChatClient("ijustseen_you");
 	}
 }
