@@ -11,6 +11,15 @@ import takeyourminestream.modid.ModConfig;
 import net.minecraft.util.math.RotationAxis;
 
 import java.util.List;
+import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.util.Identifier;
+import org.lwjgl.opengl.GL11;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
+import net.minecraft.client.texture.AbstractTexture;
+import net.minecraft.client.render.VertexConsumer;
+import net.minecraft.client.render.RenderLayer;
+import net.minecraft.client.render.OverlayTexture;
 
 /**
  * Отвечает за рендеринг сообщений в мире
@@ -18,6 +27,13 @@ import java.util.List;
 public class MessageRenderer {
     private final MessageLifecycleManager lifecycleManager;
     
+    private static final Identifier PANEL_TEXTURE = Identifier.of("take-your-minestream", "textures/gui/message_panel.png");
+    private static final int PANEL_TEX_SIZE = 32;
+    private static final int PANEL_CORNER = 8;
+    private static final int PANEL_MIN = 2 * PANEL_CORNER;
+    private static final int PANEL_PADDING_X = 6;
+    private static final int PANEL_PADDING_Y = 4;
+
     public MessageRenderer(MessageLifecycleManager lifecycleManager) {
         this.lifecycleManager = lifecycleManager;
         
@@ -46,34 +62,43 @@ public class MessageRenderer {
 
         int tickCounter = lifecycleManager.getTickCounter();
         int age = message.getEffectiveAge(tickCounter);
-        
-        // Вычисляем прозрачность на основе возраста
         float alpha = calculateAlpha(age);
 
-        // Перемещаем к позиции сообщения
+        // --- ЭФФЕКТ ПАДЕНИЯ В ПОСЛЕДНИЕ 0.4 СЕКУНДЫ ---
+        float fallOffsetY = 0.0f;
+        int fadeStart = ModConfig.MESSAGE_LIFETIME_TICKS;
+        int fadeOutTicks = ModConfig.MESSAGE_FADEOUT_TICKS;
+        int fallTicks = Math.min(8, fadeOutTicks); // 0.4 секунды = 8 тиков (20 тиков/сек)
+        int fadeAge = age - fadeStart;
+        if (fadeAge > 0 && fadeOutTicks > 0 && fadeAge >= (fadeOutTicks - fallTicks)) {
+            float fallProgress = (float)(fadeAge - (fadeOutTicks - fallTicks)) / (float)fallTicks;
+            fallProgress = Math.min(Math.max(fallProgress, 0.0f), 1.0f);
+            float maxFall = 20.0f; // Максимальное смещение вниз в пикселях (можно настроить)
+            // Было: fallOffsetY = fallProgress * maxFall;
+            // Стало: падение по кривой (ускорение)
+            fallOffsetY = (fallProgress * fallProgress) * maxFall;
+        }
+        // --- КОНЕЦ ЭФФЕКТА ПАДЕНИЯ ---
+
         matrices.translate(
             message.getPosition().getX() - client.gameRenderer.getCamera().getPos().getX(),
             message.getPosition().getY() - client.gameRenderer.getCamera().getPos().getY(),
             message.getPosition().getZ() - client.gameRenderer.getCamera().getPos().getZ()
         );
-
-        // Поворачиваем к фиксированному направлению (yaw/pitch)
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-message.getYaw()));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(message.getPitch()));
-
-        // Масштабируем текст
         matrices.scale(0.025f, -0.025f, 0.025f);
 
-        // Переносим строки
         List<OrderedText> wrappedText = textRenderer.wrapLines(Text.of(message.getText()), 120);
-
-        // Вычисляем общую высоту текста
         float totalTextHeight = wrappedText.size() * textRenderer.fontHeight;
-
-        // Центрируем текст
-        matrices.translate(-textRenderer.getWidth(wrappedText.get(0)) / 2.0f, -totalTextHeight / 2.0f, 0);
-
-        // Рендерим каждую строку
+        int textWidth = textRenderer.getWidth(wrappedText.get(0));
+        int panelWidth = textWidth + PANEL_PADDING_X * 2;
+        int panelHeight = (int)totalTextHeight + PANEL_PADDING_Y * 2;
+        // Центрируем текст и панель + применяем падение
+        matrices.translate(-textWidth / 2.0f, -totalTextHeight / 2.0f + fallOffsetY, 0);
+        // Рендерим панель
+        renderPanel9Slice(matrices, -PANEL_PADDING_X, -PANEL_PADDING_Y, panelWidth, panelHeight, alpha, consumers);
+        // Рендерим текст
         for (int i = 0; i < wrappedText.size(); i++) {
             int alphaInt = ((int)(255 * alpha)) << 24;
             int color = (0xFFFFFF) | alphaInt;
@@ -104,5 +129,78 @@ public class MessageRenderer {
             return 1.0f - Math.min(Math.max(fadeProgress, 0.0f), 1.0f);
         }
         return 1.0f;
+    }
+
+    /**
+     * Рендерит 9-slice панель
+     */
+    private void renderPanel9Slice(MatrixStack matrices, int x, int y, int width, int height, float alpha, VertexConsumerProvider consumers) {
+        if (width < PANEL_MIN) width = PANEL_MIN;
+        if (height < PANEL_MIN) height = PANEL_MIN;
+        VertexConsumer consumer = consumers.getBuffer(net.minecraft.client.render.RenderLayer.getEntityTranslucent(PANEL_TEXTURE));
+        Matrix4f mat = matrices.peek().getPositionMatrix();
+        int x0 = x;
+        int x1 = x + PANEL_CORNER;
+        int x2 = x + width - PANEL_CORNER;
+        int x3 = x + width;
+        int y0 = y;
+        int y1 = y + PANEL_CORNER;
+        int y2 = y + height - PANEL_CORNER;
+        int y3 = y + height;
+        float u0 = 0f;
+        float u1 = 8f / (float)PANEL_TEX_SIZE;
+        float u2 = 24f / (float)PANEL_TEX_SIZE;
+        float u3 = 1f;
+        float v0 = 0f;
+        float v1 = 8f / (float)PANEL_TEX_SIZE;
+        float v2 = 24f / (float)PANEL_TEX_SIZE;
+        float v3 = 1f;
+        // 1. Углы
+        drawQuadGL(consumer, mat, x0, y0, x1, y1, u0, v0, u1, v1, alpha); // левый верх
+        drawQuadGL(consumer, mat, x2, y0, x3, y1, u2, v0, u3, v1, alpha); // правый верх
+        drawQuadGL(consumer, mat, x0, y2, x1, y3, u0, v2, u1, v3, alpha); // левый низ
+        drawQuadGL(consumer, mat, x2, y2, x3, y3, u2, v2, u3, v3, alpha); // правый низ
+        // 2. Края
+        drawQuadGL(consumer, mat, x1, y0, x2, y1, u1, v0, u2, v1, alpha); // верх
+        drawQuadGL(consumer, mat, x1, y2, x2, y3, u1, v2, u2, v3, alpha); // низ
+        drawQuadGL(consumer, mat, x0, y1, x1, y2, u0, v1, u1, v2, alpha); // левый
+        drawQuadGL(consumer, mat, x2, y1, x3, y2, u2, v1, u3, v2, alpha); // правый
+        // 3. Центр
+        drawQuadGL(consumer, mat, x1, y1, x2, y2, u1, v1, u2, v2, alpha); // центр
+    }
+    /**
+     * Рисует один quad
+     */
+    private void drawQuadGL(VertexConsumer consumer, Matrix4f mat, int x0, int y0, int x1, int y1, float u0, float v0, float u1, float v1, float alpha) {
+        int light = 0xF000F0;
+        int overlay = net.minecraft.client.render.OverlayTexture.DEFAULT_UV;
+        // Левый верх
+        consumer.vertex(mat, x0, y0, 0)
+                .color(1f, 1f, 1f, alpha)
+                .texture(u0, v0)
+                .overlay(overlay)
+                .light(light)
+                .normal(0, 0, -1);
+        // Левый низ
+        consumer.vertex(mat, x0, y1, 0)
+                .color(1f, 1f, 1f, alpha)
+                .texture(u0, v1)
+                .overlay(overlay)
+                .light(light)
+                .normal(0, 0, -1);
+        // Правый низ
+        consumer.vertex(mat, x1, y1, 0)
+                .color(1f, 1f, 1f, alpha)
+                .texture(u1, v1)
+                .overlay(overlay)
+                .light(light)
+                .normal(0, 0, -1);
+        // Правый верх
+        consumer.vertex(mat, x1, y0, 0)
+                .color(1f, 1f, 1f, alpha)
+                .texture(u1, v0)
+                .overlay(overlay)
+                .light(light)
+                .normal(0, 0, -1);
     }
 } 
