@@ -8,6 +8,8 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.OrderedText;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.util.math.MathHelper;
 import org.joml.Matrix4f;
 
 import java.util.List;
@@ -32,6 +34,12 @@ public class MessageRenderer {
 
                 int tickCounter = MessageSpawner.getTickCounter();
                 int age = tickCounter - (int)message.spawnTick();
+                
+                // Учитываем замороженные тики при вычислении возраста
+                if (ModConfig.ENABLE_FREEZING_ON_VIEW) {
+                    age = Math.max(0, age - message.frozenTicks());
+                }
+                
                 int fadeStart = ModConfig.MESSAGE_LIFETIME_TICKS;
                 int fadeEnd = ModConfig.MESSAGE_LIFETIME_TICKS + ModConfig.MESSAGE_FADEOUT_TICKS;
                 float alpha = 1.0f;
