@@ -11,8 +11,10 @@ public class TwitchChatClient {
 
     private TwitchClient twitchClient;
     private final Random random = new Random();
+    private final MessageSpawner messageSpawner;
 
-    public TwitchChatClient(String channelName) {
+    public TwitchChatClient(String channelName, MessageSpawner messageSpawner) {
+        this.messageSpawner = messageSpawner;
         initializeTwitchClient();
     }
 
@@ -34,7 +36,7 @@ public class TwitchChatClient {
             System.out.println("[" + event.getChannel().getName() + "] " + user + ": " + message);
             // Here we will pass the message to MessageSpawner
             // For now, we are just printing it to console for verification.
-            MessageSpawner.setCurrentMessage(getRandomColor() + user + ": §r" + message);
+            messageSpawner.setCurrentMessage(getRandomColor() + user + ": §r" + message);
         });
 
         twitchClient.getChat().joinChannel(ModConfig.TWITCH_CHANNEL_NAME);

@@ -7,14 +7,18 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.Text;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import takeyourminestream.modid.messages.MessageSpawner;
-import takeyourminestream.modid.messages.MessageRenderer;
+import takeyourminestream.modid.messages.MessageSystemFactory;
 
 public class TakeYourMineStreamClient implements ClientModInitializer {
 
 	private static TwitchChatClient twitchChatClient;
+	private static MessageSpawner messageSpawner;
 
 	@Override
 	public void onInitializeClient() {
+		// Инициализируем систему сообщений через фабрику
+		messageSpawner = MessageSystemFactory.createMessageSystem();
+
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
 			dispatcher.register(ClientCommandManager.literal("minestream")
@@ -22,7 +26,7 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 					.then(ClientCommandManager.argument("message", StringArgumentType.greedyString())
 						.executes(context -> {
 							String message = StringArgumentType.getString(context, "message");
-							MessageSpawner.setCurrentMessage(message);
+							messageSpawner.setCurrentMessage(message);
 							if (MinecraftClient.getInstance().player != null) {
 								MinecraftClient.getInstance().player.sendMessage(Text.of("Minestream message set to: " + message), false);
 							}
@@ -30,7 +34,7 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 						})))
 				.then(ClientCommandManager.literal("stop")
 					.executes(context -> {
-						MessageSpawner.setCurrentMessage("");
+						messageSpawner.setCurrentMessage("");
 						 if (MinecraftClient.getInstance().player != null) {
 							 MinecraftClient.getInstance().player.sendMessage(Text.of("Minestream message stopped."), false);
 						 }
@@ -45,7 +49,7 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 						.executes(context -> {
 							if (twitchChatClient == null) {
 								MinecraftClient.getInstance().player.sendMessage(Text.of("Connecting to Twitch chat '" + ModConfig.TWITCH_CHANNEL_NAME + "'..."), false);
-								twitchChatClient = new TwitchChatClient(ModConfig.TWITCH_CHANNEL_NAME);
+								twitchChatClient = new TwitchChatClient(ModConfig.TWITCH_CHANNEL_NAME, messageSpawner);
 								if (MinecraftClient.getInstance().player != null) {
 									MinecraftClient.getInstance().player.sendMessage(Text.of("Successfully connected!"), false);
 								}
@@ -74,11 +78,7 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 			);
 		});
 
-		// Initialize the message spawner and renderer
-		new MessageSpawner();
-		new MessageRenderer();
-
 		// Initialize TwitchChatClient on mod start for the specified channel
-		twitchChatClient = new TwitchChatClient(ModConfig.TWITCH_CHANNEL_NAME);
+		twitchChatClient = new TwitchChatClient(ModConfig.TWITCH_CHANNEL_NAME, messageSpawner);
 	}
 }
