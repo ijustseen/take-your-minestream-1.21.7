@@ -8,6 +8,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.Text;
 import net.minecraft.text.OrderedText;
 import takeyourminestream.modid.ModConfig;
+import net.minecraft.util.math.RotationAxis;
 
 import java.util.List;
 
@@ -56,8 +57,9 @@ public class MessageRenderer {
             message.getPosition().getZ() - client.gameRenderer.getCamera().getPos().getZ()
         );
 
-        // Поворачиваем к камере
-        matrices.multiply(client.gameRenderer.getCamera().getRotation());
+        // Поворачиваем к фиксированному направлению (yaw/pitch)
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-message.getYaw()));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(message.getPitch()));
 
         // Масштабируем текст
         matrices.scale(0.025f, -0.025f, 0.025f);

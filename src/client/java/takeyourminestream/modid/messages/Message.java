@@ -10,12 +10,16 @@ public class Message {
     private final Vec3d position;
     private final long spawnTick;
     private int frozenTicks;
+    private final float yaw;
+    private final float pitch;
     
-    public Message(String text, Vec3d position, long spawnTick) {
+    public Message(String text, Vec3d position, long spawnTick, float yaw, float pitch) {
         this.text = text;
         this.position = position;
         this.spawnTick = spawnTick;
         this.frozenTicks = 0;
+        this.yaw = yaw;
+        this.pitch = pitch;
     }
     
     public String getText() { 
@@ -37,6 +41,9 @@ public class Message {
     public void incrementFrozenTicks() {
         this.frozenTicks++;
     }
+    
+    public float getYaw() { return yaw; }
+    public float getPitch() { return pitch; }
     
     /**
      * Вычисляет эффективный возраст сообщения с учетом замороженного времени

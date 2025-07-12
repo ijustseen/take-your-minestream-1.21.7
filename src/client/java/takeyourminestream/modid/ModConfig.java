@@ -2,7 +2,7 @@ package takeyourminestream.modid;
 
 public class ModConfig {
     // Имя Twitch-канала
-    public static final String TWITCH_CHANNEL_NAME = "ijustseen_you";
+    public static final String TWITCH_CHANNEL_NAME = "barsigold";
 
     // Длительность жизни сообщения (в тиках)
     public static final int MESSAGE_LIFETIME_TICKS = 80; // 3 секунды при 20 тиках/сек

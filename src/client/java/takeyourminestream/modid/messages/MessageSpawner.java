@@ -2,6 +2,7 @@ package takeyourminestream.modid.messages;
 
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Отвечает за спавн новых сообщений из очереди
@@ -25,7 +26,15 @@ public class MessageSpawner {
                     if (messageText != null) {
                         // Генерируем позицию и создаем новое сообщение
                         var position = MessagePosition.generateRandomPosition(client);
-                        var message = new Message(messageText, position, lifecycleManager.getTickCounter());
+                        // Вычисляем yaw/pitch на игрока
+                        var playerEyePos = client.player.getEyePos();
+                        double dx = playerEyePos.x - position.x;
+                        double dy = playerEyePos.y - position.y;
+                        double dz = playerEyePos.z - position.z;
+                        double distXZ = Math.sqrt(dx * dx + dz * dz);
+                        float yaw = (float)(MathHelper.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0f;
+                        float pitch = (float)-(MathHelper.atan2(dy, distXZ) * (180.0 / Math.PI));
+                        var message = new Message(messageText, position, lifecycleManager.getTickCounter(), yaw, pitch);
                         lifecycleManager.addMessage(message);
                     }
                 }
