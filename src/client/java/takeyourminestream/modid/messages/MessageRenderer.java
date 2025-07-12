@@ -62,23 +62,23 @@ public class MessageRenderer {
 
         int tickCounter = lifecycleManager.getTickCounter();
         int age = message.getEffectiveAge(tickCounter);
-        float alpha = calculateAlpha(age);
-
-        // --- ЭФФЕКТ ПАДЕНИЯ В ПОСЛЕДНИЕ 0.4 СЕКУНДЫ ---
+        int fallTicks = ModConfig.MESSAGE_FALL_TICKS;
+        int fallStart = ModConfig.MESSAGE_LIFETIME_TICKS;
+        int fallAge = age - fallStart;
         float fallOffsetY = 0.0f;
-        int fadeStart = ModConfig.MESSAGE_LIFETIME_TICKS;
-        int fadeOutTicks = ModConfig.MESSAGE_FADEOUT_TICKS;
-        int fallTicks = Math.min(8, fadeOutTicks); // 0.4 секунды = 8 тиков (20 тиков/сек)
-        int fadeAge = age - fadeStart;
-        if (fadeAge > 0 && fadeOutTicks > 0 && fadeAge >= (fadeOutTicks - fallTicks)) {
-            float fallProgress = (float)(fadeAge - (fadeOutTicks - fallTicks)) / (float)fallTicks;
+        boolean isFalling = false;
+        if (fallAge >= 0 && fallAge < fallTicks) {
+            float fallProgress = (float)fallAge / (float)fallTicks;
             fallProgress = Math.min(Math.max(fallProgress, 0.0f), 1.0f);
-            float maxFall = 20.0f; // Максимальное смещение вниз в пикселях (можно настроить)
-            // Было: fallOffsetY = fallProgress * maxFall;
-            // Стало: падение по кривой (ускорение)
+            float maxFall = 20.0f;
             fallOffsetY = (fallProgress * fallProgress) * maxFall;
+            isFalling = true;
         }
-        // --- КОНЕЦ ЭФФЕКТА ПАДЕНИЯ ---
+        if (fallAge >= fallTicks) {
+            // Сообщение уже "разбилось" и не должно отображаться
+            matrices.pop();
+            return;
+        }
 
         matrices.translate(
             message.getPosition().getX() - client.gameRenderer.getCamera().getPos().getX(),
@@ -97,10 +97,10 @@ public class MessageRenderer {
         // Центрируем текст и панель + применяем падение
         matrices.translate(-textWidth / 2.0f, -totalTextHeight / 2.0f + fallOffsetY, 0);
         // Рендерим панель
-        renderPanel9Slice(matrices, -PANEL_PADDING_X, -PANEL_PADDING_Y, panelWidth, panelHeight, alpha, consumers);
+        renderPanel9Slice(matrices, -PANEL_PADDING_X, -PANEL_PADDING_Y, panelWidth, panelHeight, 1.0f, consumers);
         // Рендерим текст
         for (int i = 0; i < wrappedText.size(); i++) {
-            int alphaInt = ((int)(255 * alpha)) << 24;
+            int alphaInt = 0xFF << 24;
             int color = (0xFFFFFF) | alphaInt;
             textRenderer.draw(wrappedText.get(i),
                               0.0F,
@@ -117,20 +117,6 @@ public class MessageRenderer {
         matrices.pop();
     }
     
-    /**
-     * Вычисляет прозрачность на основе возраста сообщения
-     */
-    private float calculateAlpha(int age) {
-        int fadeStart = ModConfig.MESSAGE_LIFETIME_TICKS;
-        int fadeEnd = ModConfig.MESSAGE_LIFETIME_TICKS + ModConfig.MESSAGE_FADEOUT_TICKS;
-        
-        if (age > fadeStart) {
-            float fadeProgress = (float)(age - fadeStart) / (float)ModConfig.MESSAGE_FADEOUT_TICKS;
-            return 1.0f - Math.min(Math.max(fadeProgress, 0.0f), 1.0f);
-        }
-        return 1.0f;
-    }
-
     /**
      * Рендерит 9-slice панель
      */

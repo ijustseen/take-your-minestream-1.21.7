@@ -32,16 +32,26 @@ public class MessageLifecycleManager {
         }
         
         // Удаляем старые сообщения с учетом замороженного времени
+        int fallTicks = ModConfig.MESSAGE_FALL_TICKS;
+        int removeAfter = ModConfig.MESSAGE_LIFETIME_TICKS + fallTicks;
         if (ModConfig.ENABLE_FREEZING_ON_VIEW) {
             activeMessages.removeIf(message -> {
                 int effectiveAge = message.getEffectiveAge(tickCounter);
-                return effectiveAge > (ModConfig.MESSAGE_LIFETIME_TICKS + ModConfig.MESSAGE_FADEOUT_TICKS);
+                if (effectiveAge > removeAfter) {
+                    // TODO: Add particle effects when message expires (e.g., crying obsidian break particles)
+                    return true;
+                }
+                return false;
             });
         } else {
-            // Старая логика без заморозки
-            activeMessages.removeIf(message -> 
-                tickCounter - message.getSpawnTick() > (ModConfig.MESSAGE_LIFETIME_TICKS + ModConfig.MESSAGE_FADEOUT_TICKS)
-            );
+            activeMessages.removeIf(message -> {
+                int effectiveAge = tickCounter - (int)message.getSpawnTick();
+                if (effectiveAge > removeAfter) {
+                    // TODO: Add particle effects when message expires (e.g., crying obsidian break particles)
+                    return true;
+                }
+                return false;
+            });
         }
     }
     
