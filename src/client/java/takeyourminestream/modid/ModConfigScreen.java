@@ -95,9 +95,9 @@ public class ModConfigScreen extends Screen {
         this.addDrawableChild(ButtonWidget.builder(Text.of("Сохранить и выйти"), btn -> {
             // Если имя канала изменилось — переподключаем
             if (!ModConfig.TWITCH_CHANNEL_NAME.equals(initialChannelName)) {
-                takeyourminestream.modid.TakeYourMineStreamClient.onTwitchChannelNameChanged(ModConfig.TWITCH_CHANNEL_NAME);
+                takeyourminestream.modid.TwitchManager.onChannelNameChanged(ModConfig.TWITCH_CHANNEL_NAME);
             }
-            takeyourminestream.modid.ModConfig.saveConfig();
+            takeyourminestream.modid.ConfigManager.saveConfig();
             this.close();
         }).dimensions(centerX - fieldWidth / 2, y, fieldWidth, fieldHeight).build());
     }

@@ -16,31 +16,13 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 
 public class TakeYourMineStreamClient implements ClientModInitializer {
 
-	private static TwitchChatClient twitchChatClient;
 	private static MessageSpawner messageSpawner;
 	private static KeyBinding openConfigScreenKeyBinding;
-	private static String lastTwitchChannelName = ModConfig.TWITCH_CHANNEL_NAME;
-	private static boolean twitchConnected = false;
-
-	public static void onTwitchChannelNameChanged(String newChannelName) {
-		if (twitchConnected && !newChannelName.equals(lastTwitchChannelName)) {
-			// Переподключаемся к новому каналу
-			if (twitchChatClient != null) {
-				twitchChatClient.disconnect();
-			}
-			twitchChatClient = new TwitchChatClient(newChannelName, messageSpawner);
-			lastTwitchChannelName = newChannelName;
-			if (MinecraftClient.getInstance().player != null) {
-				MinecraftClient.getInstance().player.sendMessage(Text.of("Переподключено к Twitch-каналу: " + newChannelName), false);
-			}
-		}
-		lastTwitchChannelName = newChannelName;
-	}
 
 	@Override
 	public void onInitializeClient() {
 		// Загружаем пользовательский конфиг
-		ModConfig.loadConfig();
+		ConfigManager.loadConfig();
 		// Инициализируем систему сообщений через фабрику
 		messageSpawner = MessageSystemFactory.createMessageSystem();
 
@@ -59,7 +41,7 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 			}
 		});
 
-		// TwitchChatClient больше не создается автоматически!
+		// TwitchManager больше не создается автоматически!
 
 		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
 		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
@@ -80,45 +62,18 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 						if (MinecraftClient.getInstance().player != null) {
 							MinecraftClient.getInstance().player.sendMessage(Text.of("Minestream message stopped."), false);
 						}
-						if (twitchChatClient != null) {
-							twitchChatClient.disconnect();
-							twitchChatClient = null;
-							twitchConnected = false;
-						}
+						TwitchManager.disconnect();
 						return 1;
 					}))
 				.then(ClientCommandManager.literal("twitch")
 					.then(ClientCommandManager.literal("start")
 						.executes(context -> {
-							if (twitchChatClient == null) {
-								MinecraftClient.getInstance().player.sendMessage(Text.of("Connecting to Twitch chat '" + ModConfig.TWITCH_CHANNEL_NAME + "'..."), false);
-								twitchChatClient = new TwitchChatClient(ModConfig.TWITCH_CHANNEL_NAME, messageSpawner);
-								twitchConnected = true;
-								lastTwitchChannelName = ModConfig.TWITCH_CHANNEL_NAME;
-								if (MinecraftClient.getInstance().player != null) {
-									MinecraftClient.getInstance().player.sendMessage(Text.of("Successfully connected!"), false);
-								}
-							} else {
-								if (MinecraftClient.getInstance().player != null) {
-									MinecraftClient.getInstance().player.sendMessage(Text.of("Already connected to Twitch chat."), false);
-								}
-							}
+							TwitchManager.connect(messageSpawner);
 							return 1;
 						}))
 					.then(ClientCommandManager.literal("stop")
 						.executes(context -> {
-							if (twitchChatClient != null) {
-								twitchChatClient.disconnect();
-								twitchChatClient = null;
-								twitchConnected = false;
-								if (MinecraftClient.getInstance().player != null) {
-									MinecraftClient.getInstance().player.sendMessage(Text.of("Disconnected from Twitch chat."), false);
-								}
-							} else {
-								if (MinecraftClient.getInstance().player != null) {
-									MinecraftClient.getInstance().player.sendMessage(Text.of("Not connected to Twitch chat."), false);
-								}
-							}
+							TwitchManager.disconnect();
 							return 1;
 						})))
 			);
