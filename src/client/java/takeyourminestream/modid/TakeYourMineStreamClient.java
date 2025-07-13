@@ -39,6 +39,8 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 
 	@Override
 	public void onInitializeClient() {
+		// Загружаем пользовательский конфиг
+		ModConfig.loadConfig();
 		// Инициализируем систему сообщений через фабрику
 		messageSpawner = MessageSystemFactory.createMessageSystem();
 

@@ -97,6 +97,7 @@ public class ModConfigScreen extends Screen {
             if (!ModConfig.TWITCH_CHANNEL_NAME.equals(initialChannelName)) {
                 takeyourminestream.modid.TakeYourMineStreamClient.onTwitchChannelNameChanged(ModConfig.TWITCH_CHANNEL_NAME);
             }
+            takeyourminestream.modid.ModConfig.saveConfig();
             this.close();
         }).dimensions(centerX - fieldWidth / 2, y, fieldWidth, fieldHeight).build());
     }
