@@ -79,10 +79,10 @@ public class ModConfigScreen extends Screen {
 
         // Кнопка для переключения режима спавна (MESSAGES_IN_FRONT_OF_PLAYER_ONLY)
         inFrontOnlyToggleButton = ButtonWidget.builder(
-            Text.translatable(ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY ? "takeyourminestream.config.in_front_only_on" : "takeyourminestream.config.in_front_only_off"),
+            Text.translatable(ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY ? "takeyourminestream.config.fop_only" : "takeyourminestream.config.around_player"),
             btn -> {
                 ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY = !ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY;
-                btn.setMessage(Text.translatable(ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY ? "takeyourminestream.config.in_front_only_on" : "takeyourminestream.config.in_front_only_off"));
+                btn.setMessage(Text.translatable(ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY ? "takeyourminestream.config.fop_only" : "takeyourminestream.config.around_player"));
             }
         ).dimensions(centerX + 10, y, fieldWidth, fieldHeight).build();
         this.addDrawableChild(inFrontOnlyToggleButton);
@@ -165,7 +165,7 @@ public class ModConfigScreen extends Screen {
         context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.max_freeze_distance"), x6, y6 - fontHeight / 2, labelColor, true);
         context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.max_freeze_distance_blocks"), x6, y6 + fontHeight / 2, labelColor, true);
         // Спавнить только спереди
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.in_front_only_label"), x7, y7, labelColor, true);
+        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.spawn_mode_label"), x7, y7, labelColor, true);
     }
 
     @Override

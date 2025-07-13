@@ -13,7 +13,7 @@
   "takeyourminestream.config.save_and_exit": "Сохранить и выйти",
   "takeyourminestream.config.on": "ВКЛ",
   "takeyourminestream.config.off": "ВЫКЛ",
-  "takeyourminestream.config.in_front_only_on": "Только спереди (по взгляду)",
-  "takeyourminestream.config.in_front_only_off": "Вокруг игрока",
-  "takeyourminestream.config.in_front_only_label": "Спавнить только спереди:"
+  "takeyourminestream.config.spawn_mode_label": "Режим спавна сообщений:",
+  "takeyourminestream.config.fop_only": "Только спереди (FOP)",
+  "takeyourminestream.config.around_player": "Вокруг игрока"
 }

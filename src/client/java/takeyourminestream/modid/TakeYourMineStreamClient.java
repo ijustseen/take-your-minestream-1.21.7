@@ -18,6 +18,7 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 
 	private static MessageSpawner messageSpawner;
 	private static KeyBinding openConfigScreenKeyBinding;
+	private static KeyBinding twitchToggleKeyBinding; // Новый биндинг
 
 	@Override
 	public void onInitializeClient() {
@@ -33,11 +34,26 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 			GLFW.GLFW_KEY_RIGHT_BRACKET, // Клавиша ']'
 			"Take Your Minestream"
 		));
+		// Регистрация KeyBinding для Twitch toggle
+		// (GLFW.GLFW_KEY_LEFT_BRACKET — это '[')
+		twitchToggleKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+			"Toggle Twitch",
+			InputUtil.Type.KEYSYM,
+			GLFW.GLFW_KEY_LEFT_BRACKET, // Клавиша '['
+			"Take Your Minestream"
+		));
 
-		// Обработка нажатия клавиши
+		// Обработка нажатия клавиш
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			while (openConfigScreenKeyBinding.wasPressed()) {
 				client.setScreen(new ModConfigScreen());
+			}
+			while (twitchToggleKeyBinding.wasPressed()) {
+				if (TwitchManager.isConnected()) {
+					TwitchManager.disconnect();
+				} else {
+					TwitchManager.connect(messageSpawner);
+				}
 			}
 		});
 
