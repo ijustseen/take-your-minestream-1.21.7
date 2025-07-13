@@ -28,10 +28,10 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 
 		// Регистрация KeyBinding для открытия экрана настроек
 		openConfigScreenKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-			"key.takeyourminestream.open_config_screen",
+			"Open Config",
 			InputUtil.Type.KEYSYM,
 			GLFW.GLFW_KEY_RIGHT_BRACKET, // Клавиша ']'
-			"category.takeyourminestream"
+			"Take Your Minestream"
 		));
 
 		// Обработка нажатия клавиши

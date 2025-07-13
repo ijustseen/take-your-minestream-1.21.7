@@ -25,7 +25,9 @@ public class MessageSpawner {
                     String messageText = messageQueue.dequeueMessage(lifecycleManager.getTickCounter());
                     if (messageText != null) {
                         // Генерируем позицию и создаем новое сообщение
-                        var position = MessagePosition.generateRandomPosition(client);
+                        var position = takeyourminestream.modid.ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY
+                            ? MessagePosition.generatePositionInFrontOfPlayer(client)
+                            : MessagePosition.generateRandomPosition(client);
                         // Вычисляем yaw/pitch на игрока
                         var playerEyePos = client.player.getEyePos();
                         double dx = playerEyePos.x - position.x;

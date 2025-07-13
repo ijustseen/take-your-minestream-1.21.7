@@ -16,6 +16,7 @@ public class ModConfigScreen extends Screen {
     private TextFieldWidget viewAngleField;
     private TextFieldWidget maxFreezeDistanceField;
     private ButtonWidget freezingToggleButton;
+    private ButtonWidget inFrontOnlyToggleButton;
     private final @Nullable Screen parent;
     private String initialChannelName;
 
@@ -76,6 +77,17 @@ public class ModConfigScreen extends Screen {
         this.addDrawableChild(freezingToggleButton);
         y += spacing;
 
+        // Кнопка для переключения режима спавна (MESSAGES_IN_FRONT_OF_PLAYER_ONLY)
+        inFrontOnlyToggleButton = ButtonWidget.builder(
+            Text.translatable(ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY ? "takeyourminestream.config.in_front_only_on" : "takeyourminestream.config.in_front_only_off"),
+            btn -> {
+                ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY = !ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY;
+                btn.setMessage(Text.translatable(ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY ? "takeyourminestream.config.in_front_only_on" : "takeyourminestream.config.in_front_only_off"));
+            }
+        ).dimensions(centerX + 10, y, fieldWidth, fieldHeight).build();
+        this.addDrawableChild(inFrontOnlyToggleButton);
+        y += spacing;
+
         // Поле для угла обзора
         viewAngleField = new TextFieldWidget(textRenderer, centerX + 10, y, fieldWidth, fieldHeight, Text.translatable("takeyourminestream.config.view_angle"));
         viewAngleField.setText(String.valueOf(ModConfig.VIEW_ANGLE_DEGREES));
@@ -128,12 +140,14 @@ public class ModConfigScreen extends Screen {
         int x4 = freezingToggleButton.getX() - labelWidth - labelOffsetX;
         int x5 = viewAngleField.getX() - labelWidth - labelOffsetX;
         int x6 = maxFreezeDistanceField.getX() - labelWidth - labelOffsetX;
+        int x7 = inFrontOnlyToggleButton.getX() - labelWidth - labelOffsetX;
         int y1 = channelNameField.getY() + (fieldHeight - fontHeight) / 2;
         int y2 = messageLifetimeField.getY() + (fieldHeight - fontHeight) / 2;
         int y3 = messageFallField.getY() + (fieldHeight - fontHeight) / 2;
         int y4 = freezingToggleButton.getY() + (fieldHeight - fontHeight) / 2;
         int y5 = viewAngleField.getY() + (fieldHeight - fontHeight) / 2;
         int y6 = maxFreezeDistanceField.getY() + (fieldHeight - fontHeight) / 2;
+        int y7 = inFrontOnlyToggleButton.getY() + (fieldHeight - fontHeight) / 2;
         // Имя Twitch-канала
         context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.channel_name"), x1, y1, labelColor, true);
         // Время жизни сообщения (тики):
@@ -150,6 +164,8 @@ public class ModConfigScreen extends Screen {
         // Макс. дистанция заморозки (блоки):
         context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.max_freeze_distance"), x6, y6 - fontHeight / 2, labelColor, true);
         context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.max_freeze_distance_blocks"), x6, y6 + fontHeight / 2, labelColor, true);
+        // Спавнить только спереди
+        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.in_front_only_label"), x7, y7, labelColor, true);
     }
 
     @Override

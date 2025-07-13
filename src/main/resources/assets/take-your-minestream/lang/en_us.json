@@ -12,5 +12,8 @@
   "takeyourminestream.config.max_freeze_distance_blocks": "(blocks):",
   "takeyourminestream.config.save_and_exit": "Save and Exit",
   "takeyourminestream.config.on": "ON",
-  "takeyourminestream.config.off": "OFF"
+  "takeyourminestream.config.off": "OFF",
+  "takeyourminestream.config.in_front_only_on": "In front only (by view)",
+  "takeyourminestream.config.in_front_only_off": "Around player",
+  "takeyourminestream.config.in_front_only_label": "Spawn in front only:"
 }

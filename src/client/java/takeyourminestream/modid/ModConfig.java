@@ -21,4 +21,7 @@ public class ModConfig {
     
     // Максимальное расстояние для заморозки сообщения (в блоках)
     public static double MAX_FREEZE_DISTANCE = 15.0; // Увеличено с 10 до 15 блоков
+
+    // Спавнить сообщения только в зоне видимости игрока (true) или вокруг (false)
+    public static boolean MESSAGES_IN_FRONT_OF_PLAYER_ONLY = false;
 } 
