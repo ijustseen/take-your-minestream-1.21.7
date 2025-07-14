@@ -21,7 +21,6 @@ public class ConfigManager {
                     ModConfig.MESSAGE_LIFETIME_TICKS = data.messageLifetimeTicks;
                     ModConfig.MESSAGE_FALL_TICKS = data.messageFallTicks;
                     ModConfig.ENABLE_FREEZING_ON_VIEW = data.enableFreezingOnView;
-                    ModConfig.VIEW_ANGLE_DEGREES = data.viewAngleDegrees;
                     ModConfig.MAX_FREEZE_DISTANCE = data.maxFreezeDistance;
                     ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY = data.messagesInFrontOfPlayerOnly;
                 }
@@ -37,7 +36,6 @@ public class ConfigManager {
         data.messageLifetimeTicks = ModConfig.MESSAGE_LIFETIME_TICKS;
         data.messageFallTicks = ModConfig.MESSAGE_FALL_TICKS;
         data.enableFreezingOnView = ModConfig.ENABLE_FREEZING_ON_VIEW;
-        data.viewAngleDegrees = ModConfig.VIEW_ANGLE_DEGREES;
         data.maxFreezeDistance = ModConfig.MAX_FREEZE_DISTANCE;
         data.messagesInFrontOfPlayerOnly = ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY;
         try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
@@ -52,7 +50,6 @@ public class ConfigManager {
         public int messageLifetimeTicks;
         public int messageFallTicks;
         public boolean enableFreezingOnView;
-        public double viewAngleDegrees;
         public double maxFreezeDistance;
         public boolean messagesInFrontOfPlayerOnly;
     }

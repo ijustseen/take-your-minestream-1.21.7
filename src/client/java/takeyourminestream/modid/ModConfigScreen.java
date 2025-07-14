@@ -13,7 +13,6 @@ public class ModConfigScreen extends Screen {
     private TextFieldWidget channelNameField;
     private TextFieldWidget messageLifetimeField;
     private TextFieldWidget messageFallField;
-    private TextFieldWidget viewAngleField;
     private TextFieldWidget maxFreezeDistanceField;
     private ButtonWidget freezingToggleButton;
     private ButtonWidget inFrontOnlyToggleButton;
@@ -88,15 +87,6 @@ public class ModConfigScreen extends Screen {
         this.addDrawableChild(inFrontOnlyToggleButton);
         y += spacing;
 
-        // Поле для угла обзора
-        viewAngleField = new TextFieldWidget(textRenderer, centerX + 10, y, fieldWidth, fieldHeight, Text.translatable("takeyourminestream.config.view_angle"));
-        viewAngleField.setText(String.valueOf(ModConfig.VIEW_ANGLE_DEGREES));
-        viewAngleField.setChangedListener(s -> {
-            try { ModConfig.VIEW_ANGLE_DEGREES = Double.parseDouble(s); } catch (NumberFormatException ignored) {}
-        });
-        this.addDrawableChild(viewAngleField);
-        y += spacing;
-
         // Поле для максимальной дистанции заморозки
         maxFreezeDistanceField = new TextFieldWidget(textRenderer, centerX + 10, y, fieldWidth, fieldHeight, Text.translatable("takeyourminestream.config.max_freeze_distance"));
         maxFreezeDistanceField.setText(String.valueOf(ModConfig.MAX_FREEZE_DISTANCE));
@@ -138,16 +128,14 @@ public class ModConfigScreen extends Screen {
         int x2 = messageLifetimeField.getX() - labelWidth - labelOffsetX;
         int x3 = messageFallField.getX() - labelWidth - labelOffsetX;
         int x4 = freezingToggleButton.getX() - labelWidth - labelOffsetX;
-        int x5 = viewAngleField.getX() - labelWidth - labelOffsetX;
-        int x6 = maxFreezeDistanceField.getX() - labelWidth - labelOffsetX;
-        int x7 = inFrontOnlyToggleButton.getX() - labelWidth - labelOffsetX;
+        int x5 = maxFreezeDistanceField.getX() - labelWidth - labelOffsetX;
+        int x6 = inFrontOnlyToggleButton.getX() - labelWidth - labelOffsetX;
         int y1 = channelNameField.getY() + (fieldHeight - fontHeight) / 2;
         int y2 = messageLifetimeField.getY() + (fieldHeight - fontHeight) / 2;
         int y3 = messageFallField.getY() + (fieldHeight - fontHeight) / 2;
         int y4 = freezingToggleButton.getY() + (fieldHeight - fontHeight) / 2;
-        int y5 = viewAngleField.getY() + (fieldHeight - fontHeight) / 2;
-        int y6 = maxFreezeDistanceField.getY() + (fieldHeight - fontHeight) / 2;
-        int y7 = inFrontOnlyToggleButton.getY() + (fieldHeight - fontHeight) / 2;
+        int y5 = maxFreezeDistanceField.getY() + (fieldHeight - fontHeight) / 2;
+        int y6 = inFrontOnlyToggleButton.getY() + (fieldHeight - fontHeight) / 2;
         // Имя Twitch-канала
         context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.channel_name"), x1, y1, labelColor, true);
         // Время жизни сообщения (тики):
@@ -158,14 +146,11 @@ public class ModConfigScreen extends Screen {
         context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.message_fall_ticks"), x3, y3 + fontHeight / 2, labelColor, true);
         // Заморозка при взгляде
         context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.freezing_on_view"), x4, y4 - fontHeight / 2, labelColor, true);
-        // Угол обзора (градусы):
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.view_angle"), x5, y5 - fontHeight / 2, labelColor, true);
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.view_angle_degrees"), x5, y5 + fontHeight / 2, labelColor, true);
         // Макс. дистанция заморозки (блоки):
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.max_freeze_distance"), x6, y6 - fontHeight / 2, labelColor, true);
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.max_freeze_distance_blocks"), x6, y6 + fontHeight / 2, labelColor, true);
+        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.max_freeze_distance"), x5, y5 - fontHeight / 2, labelColor, true);
+        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.max_freeze_distance_blocks"), x5, y5 + fontHeight / 2, labelColor, true);
         // Спавнить только спереди
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.spawn_mode_label"), x7, y7, labelColor, true);
+        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.spawn_mode_label"), x6, y6, labelColor, true);
     }
 
     @Override

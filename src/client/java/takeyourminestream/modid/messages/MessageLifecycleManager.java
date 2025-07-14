@@ -25,7 +25,8 @@ public class MessageLifecycleManager {
         // Обновляем замороженное время для всех сообщений
         if (ModConfig.ENABLE_FREEZING_ON_VIEW) {
             for (Message message : activeMessages) {
-                if (MessageViewDetector.isPlayerLookingAtMessage(client, message.getPosition())) {
+                if (MessageViewDetector.isPlayerLookingAtMessage(client, message.getPosition(), message.getYaw(), message.getPitch(), message.getText(), 
+                                                               tickCounter, message.getSpawnTick(), message.getFrozenTicks())) {
                     message.incrementFrozenTicks();
                 }
             }

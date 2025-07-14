@@ -16,9 +16,6 @@ public class ModConfig {
     // Не давать сообщению пропадать пока на него смотрит игрок.
     public static boolean ENABLE_FREEZING_ON_VIEW = true;
     
-    // Угол обзора для определения, смотрит ли игрок на сообщение (в градусах)
-    public static double VIEW_ANGLE_DEGREES = 16.0; // Точный угол обзора 10 градусов
-    
     // Максимальное расстояние для заморозки сообщения (в блоках)
     public static double MAX_FREEZE_DISTANCE = 15.0; // Увеличено с 10 до 15 блоков
 
