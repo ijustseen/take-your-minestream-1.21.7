@@ -19,6 +19,7 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 	private static MessageSpawner messageSpawner;
 	private static KeyBinding openConfigScreenKeyBinding;
 	private static KeyBinding twitchToggleKeyBinding; // Новый биндинг
+	private static KeyBinding donationAlertsToggleKeyBinding;
 
 	@Override
 	public void onInitializeClient() {
@@ -42,6 +43,13 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 			GLFW.GLFW_KEY_LEFT_BRACKET, // Клавиша '['
 			"Take Your Minestream"
 		));
+		// Регистрация KeyBinding для Donation Alerts toggle
+		donationAlertsToggleKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+			"Toggle Donation Alerts",
+			InputUtil.Type.KEYSYM,
+			GLFW.GLFW_KEY_BACKSLASH, // Клавиша '\'
+			"Take Your Minestream"
+		));
 
 		// Обработка нажатия клавиш
 		ClientTickEvents.END_CLIENT_TICK.register(client -> {
@@ -53,6 +61,13 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 					TwitchManager.disconnect();
 				} else {
 					TwitchManager.connect(messageSpawner);
+				}
+			}
+			while (donationAlertsToggleKeyBinding.wasPressed()) {
+				if (DonationAlertsManager.isConnected()) {
+					DonationAlertsManager.disconnect();
+				} else {
+					DonationAlertsManager.connect(messageSpawner);
 				}
 			}
 		});

@@ -21,4 +21,10 @@ public class ModConfig {
 
     // Спавнить сообщения только в зоне видимости игрока (true) или вокруг (false)
     public static boolean MESSAGES_IN_FRONT_OF_PLAYER_ONLY = false;
+
+    // === Donation Alerts ===
+    public static boolean DONATIONALERTS_ENABLED = false;
+    public static String DONATIONALERTS_WIDGET_URL = ""; // Полная ссылка на виджет
+    public static String DONATIONALERTS_GROUP_ID = "";
+    public static String DONATIONALERTS_TOKEN = "";
 } 

@@ -23,6 +23,11 @@ public class ConfigManager {
                     ModConfig.ENABLE_FREEZING_ON_VIEW = data.enableFreezingOnView;
                     ModConfig.MAX_FREEZE_DISTANCE = data.maxFreezeDistance;
                     ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY = data.messagesInFrontOfPlayerOnly;
+                    // Donation Alerts
+                    ModConfig.DONATIONALERTS_ENABLED = data.donationAlertsEnabled;
+                    ModConfig.DONATIONALERTS_WIDGET_URL = data.donationAlertsWidgetUrl;
+                    ModConfig.DONATIONALERTS_GROUP_ID = data.donationAlertsGroupId;
+                    ModConfig.DONATIONALERTS_TOKEN = data.donationAlertsToken;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -38,6 +43,11 @@ public class ConfigManager {
         data.enableFreezingOnView = ModConfig.ENABLE_FREEZING_ON_VIEW;
         data.maxFreezeDistance = ModConfig.MAX_FREEZE_DISTANCE;
         data.messagesInFrontOfPlayerOnly = ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY;
+        // Donation Alerts
+        data.donationAlertsEnabled = ModConfig.DONATIONALERTS_ENABLED;
+        data.donationAlertsWidgetUrl = ModConfig.DONATIONALERTS_WIDGET_URL;
+        data.donationAlertsGroupId = ModConfig.DONATIONALERTS_GROUP_ID;
+        data.donationAlertsToken = ModConfig.DONATIONALERTS_TOKEN;
         try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
             GSON.toJson(data, writer);
         } catch (IOException e) {
@@ -52,5 +62,10 @@ public class ConfigManager {
         public boolean enableFreezingOnView;
         public double maxFreezeDistance;
         public boolean messagesInFrontOfPlayerOnly;
+        // Donation Alerts
+        public boolean donationAlertsEnabled;
+        public String donationAlertsWidgetUrl;
+        public String donationAlertsGroupId;
+        public String donationAlertsToken;
     }
 } 

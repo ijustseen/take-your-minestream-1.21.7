@@ -13,5 +13,12 @@
   "takeyourminestream.config.off": "OFF",
   "takeyourminestream.config.spawn_mode_label": "Message Spawn Mode:",
   "takeyourminestream.config.fop_only": "FOP only",
-  "takeyourminestream.config.around_player": "Around player"
+  "takeyourminestream.config.around_player": "Around player",
+  "takeyourminestream.config.section.twitch": "Twitch",
+  "takeyourminestream.config.section.donation_alerts": "Donation Alerts",
+  "takeyourminestream.config.section.visual": "Visual Settings",
+  "takeyourminestream.config.da_enabled": "Donation Alerts Enabled:",
+  "takeyourminestream.config.da_widget_url": "Widget URL:",
+  "takeyourminestream.config.da_group_id": "Group ID:",
+  "takeyourminestream.config.da_token": "Token:"
 }

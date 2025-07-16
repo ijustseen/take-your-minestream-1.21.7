@@ -13,5 +13,12 @@
   "takeyourminestream.config.off": "ВЫКЛ",
   "takeyourminestream.config.spawn_mode_label": "Режим спавна сообщений:",
   "takeyourminestream.config.fop_only": "Только спереди (FOP)",
-  "takeyourminestream.config.around_player": "Вокруг игрока"
+  "takeyourminestream.config.around_player": "Вокруг игрока",
+  "takeyourminestream.config.section.twitch": "Twitch",
+  "takeyourminestream.config.section.donation_alerts": "Donation Alerts",
+  "takeyourminestream.config.section.visual": "Визуальные параметры",
+  "takeyourminestream.config.da_enabled": "Включить Donation Alerts:",
+  "takeyourminestream.config.da_widget_url": "Widget URL:",
+  "takeyourminestream.config.da_group_id": "Group ID:",
+  "takeyourminestream.config.da_token": "Token:"
 }
