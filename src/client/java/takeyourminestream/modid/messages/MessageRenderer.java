@@ -26,6 +26,7 @@ import net.minecraft.client.render.OverlayTexture;
  */
 public class MessageRenderer {
     private final MessageLifecycleManager lifecycleManager;
+    private final MessageParticleManager particleManager;
     
     private static final Identifier PANEL_TEXTURE = Identifier.of("take-your-minestream", "textures/gui/message_panel.png");
     private static final int PANEL_TEX_SIZE = 32;
@@ -34,8 +35,9 @@ public class MessageRenderer {
     private static final int PANEL_PADDING_X = 6;
     private static final int PANEL_PADDING_Y = 4;
 
-    public MessageRenderer(MessageLifecycleManager lifecycleManager) {
+    public MessageRenderer(MessageLifecycleManager lifecycleManager, MessageParticleManager particleManager) {
         this.lifecycleManager = lifecycleManager;
+        this.particleManager = particleManager;
         
         WorldRenderEvents.AFTER_ENTITIES.register(context -> {
             MinecraftClient client = MinecraftClient.getInstance();
@@ -49,6 +51,10 @@ public class MessageRenderer {
 
             for (Message message : activeMessages) {
                 renderMessage(client, message, matrices, textRenderer, consumers);
+            }
+            // Рендер партиклов
+            if (particleManager != null) {
+                particleManager.render(client, matrices, consumers);
             }
         });
     }

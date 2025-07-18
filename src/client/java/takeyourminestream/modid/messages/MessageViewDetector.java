@@ -78,7 +78,7 @@ public class MessageViewDetector {
     /**
      * Вычисляет позицию сообщения с учетом падения
      */
-    private static Vec3d calculateFallingPosition(Vec3d basePosition, int effectiveAge, float yaw, float pitch) {
+    public static Vec3d calculateFallingPosition(Vec3d basePosition, int effectiveAge, float yaw, float pitch) {
         int fallTicks = ModConfig.MESSAGE_FALL_TICKS;
         int fallStart = ModConfig.MESSAGE_LIFETIME_TICKS;
         int fallAge = effectiveAge - fallStart;

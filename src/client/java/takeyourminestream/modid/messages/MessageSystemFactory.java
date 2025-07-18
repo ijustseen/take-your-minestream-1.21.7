@@ -11,10 +11,10 @@ public class MessageSystemFactory {
      */
     public static MessageSpawner createMessageSystem() {
         MessageQueue messageQueue = new MessageQueue();
-        MessageLifecycleManager lifecycleManager = new MessageLifecycleManager();
+        MessageParticleManager particleManager = new MessageParticleManager();
+        MessageLifecycleManager lifecycleManager = new MessageLifecycleManager(particleManager);
         MessageSpawner messageSpawner = new MessageSpawner(messageQueue, lifecycleManager);
-        new MessageRenderer(lifecycleManager);
-        
+        new MessageRenderer(lifecycleManager, particleManager);
         return messageSpawner;
     }
 } 
