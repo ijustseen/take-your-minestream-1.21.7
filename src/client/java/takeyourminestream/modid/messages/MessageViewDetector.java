@@ -41,7 +41,7 @@ public class MessageViewDetector {
         int effectiveAge = tickCounter - (int)messageSpawnTick - frozenTicks;
         
         // Проверяем, не истек ли срок жизни сообщения
-        if (effectiveAge >= ModConfig.MESSAGE_LIFETIME_TICKS + ModConfig.MESSAGE_FALL_TICKS) {
+        if (effectiveAge >= ModConfig.getMESSAGE_LIFETIME_TICKS() + ModConfig.getMESSAGE_FALL_TICKS()) {
             return false; // Сообщение уже "разбилось"
         }
         
@@ -53,7 +53,7 @@ public class MessageViewDetector {
         
         // Проверяем расстояние - игрок должен быть достаточно близко
         double distanceToMessage = playerEyePos.distanceTo(adjustedPosition);
-        if (distanceToMessage > ModConfig.MAX_FREEZE_DISTANCE) return false;
+        if (distanceToMessage > ModConfig.getMAX_FREEZE_DISTANCE()) return false;
         
         // Получаем направление взгляда игрока
         Vec3d lookVec = client.player.getRotationVec(1.0f);
@@ -79,8 +79,8 @@ public class MessageViewDetector {
      * Вычисляет позицию сообщения с учетом падения
      */
     public static Vec3d calculateFallingPosition(Vec3d basePosition, int effectiveAge, float yaw, float pitch) {
-        int fallTicks = ModConfig.MESSAGE_FALL_TICKS;
-        int fallStart = ModConfig.MESSAGE_LIFETIME_TICKS;
+        int fallTicks = ModConfig.getMESSAGE_FALL_TICKS();
+        int fallStart = ModConfig.getMESSAGE_LIFETIME_TICKS();
         int fallAge = effectiveAge - fallStart;
         
         if (fallAge < 0) {

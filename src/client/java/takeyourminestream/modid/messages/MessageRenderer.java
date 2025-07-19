@@ -68,8 +68,8 @@ public class MessageRenderer {
 
         int tickCounter = lifecycleManager.getTickCounter();
         int age = message.getEffectiveAge(tickCounter);
-        int fallTicks = ModConfig.MESSAGE_FALL_TICKS;
-        int fallStart = ModConfig.MESSAGE_LIFETIME_TICKS;
+        int fallTicks = ModConfig.getMESSAGE_FALL_TICKS();
+        int fallStart = ModConfig.getMESSAGE_LIFETIME_TICKS();
         int fallAge = age - fallStart;
         float fallOffsetY = 0.0f;
         boolean isFalling = false;

@@ -39,39 +39,39 @@ public class ModConfigScreen extends Screen {
         int spacing = 24;
         TextRenderer textRenderer = this.textRenderer;
 
-        initialChannelName = ModConfig.TWITCH_CHANNEL_NAME;
+        initialChannelName = ModConfig.getTWITCH_CHANNEL_NAME();
 
         // Поле для имени канала
         channelNameField = new TextFieldWidget(textRenderer, centerX + 10, y, fieldWidth, fieldHeight, Text.translatable("takeyourminestream.config.channel_name"));
-        channelNameField.setText(ModConfig.TWITCH_CHANNEL_NAME);
-        channelNameField.setChangedListener(s -> ModConfig.TWITCH_CHANNEL_NAME = s);
+        channelNameField.setText(ModConfig.getTWITCH_CHANNEL_NAME());
+        channelNameField.setChangedListener(s -> ConfigManager.getInstance().setConfigValue("twitchChannelName", s));
         this.addDrawableChild(channelNameField);
         y += spacing;
 
         // Поле для времени жизни сообщения
         messageLifetimeField = new TextFieldWidget(textRenderer, centerX + 10, y, fieldWidth, fieldHeight, Text.translatable("takeyourminestream.config.message_lifetime"));
-        messageLifetimeField.setText(String.valueOf(ModConfig.MESSAGE_LIFETIME_TICKS));
+        messageLifetimeField.setText(String.valueOf(ModConfig.getMESSAGE_LIFETIME_TICKS()));
         messageLifetimeField.setChangedListener(s -> {
-            try { ModConfig.MESSAGE_LIFETIME_TICKS = Integer.parseInt(s); } catch (NumberFormatException ignored) {}
+            try { ConfigManager.getInstance().setConfigValue("messageLifetimeTicks", Integer.parseInt(s)); } catch (NumberFormatException ignored) {}
         });
         this.addDrawableChild(messageLifetimeField);
         y += spacing;
 
         // Поле для времени падения
         messageFallField = new TextFieldWidget(textRenderer, centerX + 10, y, fieldWidth, fieldHeight, Text.translatable("takeyourminestream.config.message_fall"));
-        messageFallField.setText(String.valueOf(ModConfig.MESSAGE_FALL_TICKS));
+        messageFallField.setText(String.valueOf(ModConfig.getMESSAGE_FALL_TICKS()));
         messageFallField.setChangedListener(s -> {
-            try { ModConfig.MESSAGE_FALL_TICKS = Integer.parseInt(s); } catch (NumberFormatException ignored) {}
+            try { ConfigManager.getInstance().setConfigValue("messageFallTicks", Integer.parseInt(s)); } catch (NumberFormatException ignored) {}
         });
         this.addDrawableChild(messageFallField);
         y += spacing;
 
         // Кнопка для переключения ENABLE_FREEZING_ON_VIEW
         freezingToggleButton = ButtonWidget.builder(
-            Text.translatable(ModConfig.ENABLE_FREEZING_ON_VIEW ? "takeyourminestream.config.on" : "takeyourminestream.config.off"),
+            Text.translatable(ModConfig.isENABLE_FREEZING_ON_VIEW() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"),
             btn -> {
-                ModConfig.ENABLE_FREEZING_ON_VIEW = !ModConfig.ENABLE_FREEZING_ON_VIEW;
-                btn.setMessage(Text.translatable(ModConfig.ENABLE_FREEZING_ON_VIEW ? "takeyourminestream.config.on" : "takeyourminestream.config.off"));
+                ModConfig.setENABLE_FREEZING_ON_VIEW(!ModConfig.isENABLE_FREEZING_ON_VIEW());
+                btn.setMessage(Text.translatable(ModConfig.isENABLE_FREEZING_ON_VIEW() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"));
             }
         ).dimensions(centerX + 10, y, fieldWidth, fieldHeight).build();
         this.addDrawableChild(freezingToggleButton);
@@ -79,10 +79,10 @@ public class ModConfigScreen extends Screen {
 
         // Кнопка для переключения режима спавна (MESSAGES_IN_FRONT_OF_PLAYER_ONLY)
         inFrontOnlyToggleButton = ButtonWidget.builder(
-            Text.translatable(ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY ? "takeyourminestream.config.fop_only" : "takeyourminestream.config.around_player"),
+            Text.translatable(ModConfig.isMESSAGES_IN_FRONT_OF_PLAYER_ONLY() ? "takeyourminestream.config.fop_only" : "takeyourminestream.config.around_player"),
             btn -> {
-                ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY = !ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY;
-                btn.setMessage(Text.translatable(ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY ? "takeyourminestream.config.fop_only" : "takeyourminestream.config.around_player"));
+                ModConfig.setMESSAGES_IN_FRONT_OF_PLAYER_ONLY(!ModConfig.isMESSAGES_IN_FRONT_OF_PLAYER_ONLY());
+                btn.setMessage(Text.translatable(ModConfig.isMESSAGES_IN_FRONT_OF_PLAYER_ONLY() ? "takeyourminestream.config.fop_only" : "takeyourminestream.config.around_player"));
             }
         ).dimensions(centerX + 10, y, fieldWidth, fieldHeight).build();
         this.addDrawableChild(inFrontOnlyToggleButton);
@@ -90,19 +90,19 @@ public class ModConfigScreen extends Screen {
 
         // Поле для максимальной дистанции заморозки
         maxFreezeDistanceField = new TextFieldWidget(textRenderer, centerX + 10, y, fieldWidth, fieldHeight, Text.translatable("takeyourminestream.config.max_freeze_distance"));
-        maxFreezeDistanceField.setText(String.valueOf(ModConfig.MAX_FREEZE_DISTANCE));
+        maxFreezeDistanceField.setText(String.valueOf(ModConfig.getMAX_FREEZE_DISTANCE()));
         maxFreezeDistanceField.setChangedListener(s -> {
-            try { ModConfig.MAX_FREEZE_DISTANCE = Double.parseDouble(s); } catch (NumberFormatException ignored) {}
+            try { ConfigManager.getInstance().setConfigValue("maxFreezeDistance", Double.parseDouble(s)); } catch (NumberFormatException ignored) {}
         });
         this.addDrawableChild(maxFreezeDistanceField);
         y += spacing + 6;
 
         // Кнопка для переключения ENABLE_AUTOMODERATION
         automoderationToggleButton = ButtonWidget.builder(
-            Text.translatable(ModConfig.ENABLE_AUTOMODERATION ? "takeyourminestream.config.on" : "takeyourminestream.config.off"),
+            Text.translatable(ModConfig.isENABLE_AUTOMODERATION() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"),
             btn -> {
-                ModConfig.ENABLE_AUTOMODERATION = !ModConfig.ENABLE_AUTOMODERATION;
-                btn.setMessage(Text.translatable(ModConfig.ENABLE_AUTOMODERATION ? "takeyourminestream.config.on" : "takeyourminestream.config.off"));
+                ModConfig.setENABLE_AUTOMODERATION(!ModConfig.isENABLE_AUTOMODERATION());
+                btn.setMessage(Text.translatable(ModConfig.isENABLE_AUTOMODERATION() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"));
             }
         ).dimensions(centerX + 10, y, fieldWidth, fieldHeight).build();
         this.addDrawableChild(automoderationToggleButton);
@@ -111,16 +111,16 @@ public class ModConfigScreen extends Screen {
         // Кнопка "Сохранить и выйти"
         int saveButtonWidth = 160;
         this.addDrawableChild(ButtonWidget.builder(Text.translatable("takeyourminestream.config.save_and_exit"), btn -> {
-            if (!ModConfig.TWITCH_CHANNEL_NAME.equals(initialChannelName)) {
-                takeyourminestream.modid.TwitchManager.onChannelNameChanged(ModConfig.TWITCH_CHANNEL_NAME);
+            if (!ModConfig.getTWITCH_CHANNEL_NAME().equals(initialChannelName)) {
+                TwitchManager.getInstance(ConfigManager.getInstance()).onChannelNameChanged(ModConfig.getTWITCH_CHANNEL_NAME());
             }
-            takeyourminestream.modid.ConfigManager.saveConfig();
+            ConfigManager.getInstance().saveConfig();
             this.close();
         }).dimensions(centerX - saveButtonWidth / 2, y, saveButtonWidth, fieldHeight).build());
     }
 
     private String getFreezingButtonText() {
-        return "Заморозка при взгляде: " + (ModConfig.ENABLE_FREEZING_ON_VIEW ? "ВКЛ" : "ВЫКЛ");
+        return "Заморозка при взгляде: " + (ModConfig.isENABLE_FREEZING_ON_VIEW() ? "ВКЛ" : "ВЫКЛ");
     }
 
     @Override

@@ -1,99 +1,74 @@
 package takeyourminestream.modid;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
-import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.text.Text;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import takeyourminestream.modid.messages.MessageSpawner;
 import takeyourminestream.modid.messages.MessageSystemFactory;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import org.lwjgl.glfw.GLFW;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import takeyourminestream.modid.interfaces.IConfigManager;
+import takeyourminestream.modid.interfaces.ITwitchManager;
+import takeyourminestream.modid.interfaces.IBanwordManager;
+import takeyourminestream.modid.commands.CommandManager;
+import takeyourminestream.modid.input.KeyBindingManager;
+import takeyourminestream.modid.utils.Logger;
 
+/**
+ * Главный класс клиентской части мода
+ */
 public class TakeYourMineStreamClient implements ClientModInitializer {
+    private static TakeYourMineStreamClient instance;
+    private IConfigManager configManager;
+    private ITwitchManager twitchManager;
+    private IBanwordManager banwordManager;
+    private MessageSpawner messageSpawner;
+    private CommandManager commandManager;
+    private KeyBindingManager keyBindingManager;
 
-	private static MessageSpawner messageSpawner;
-	private static KeyBinding openConfigScreenKeyBinding;
-	private static KeyBinding twitchToggleKeyBinding; // Новый биндинг
+    @Override
+    public void onInitializeClient() {
+        try {
+            initializeMod();
+            Logger.info("Take Your MineStream успешно инициализирован");
+        } catch (Exception e) {
+            Logger.error("Ошибка при инициализации мода", e);
+        }
+    }
 
-	@Override
-	public void onInitializeClient() {
-		// Загружаем пользовательский конфиг
-		ConfigManager.loadConfig();
-		// Инициализируем систему сообщений через фабрику
-		messageSpawner = MessageSystemFactory.createMessageSystem();
-		BanwordManager.loadBanwords();
+    private void initializeMod() {
+        // Инициализация менеджеров
+        configManager = ConfigManager.getInstance();
+        banwordManager = BanwordManager.getInstance();
+        twitchManager = TwitchManager.getInstance(configManager);
+        
+        // Инициализация системы сообщений
+        messageSpawner = MessageSystemFactory.createMessageSystem();
+        
+        // Инициализация менеджеров команд и клавиш
+        commandManager = new CommandManager(twitchManager, banwordManager, messageSpawner);
+        keyBindingManager = new KeyBindingManager(twitchManager, messageSpawner);
+        
+        // Регистрация команд и клавиш
+        commandManager.registerCommands();
+        keyBindingManager.registerKeyBindings();
+        
+        Logger.info("Все компоненты мода инициализированы");
+    }
 
-		// Регистрация KeyBinding для открытия экрана настроек
-		openConfigScreenKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-			"Open Config",
-			InputUtil.Type.KEYSYM,
-			GLFW.GLFW_KEY_RIGHT_BRACKET, // Клавиша ']'
-			"Take Your Minestream"
-		));
-		// Регистрация KeyBinding для Twitch toggle
-		// (GLFW.GLFW_KEY_LEFT_BRACKET — это '[')
-		twitchToggleKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-			"Toggle Twitch",
-			InputUtil.Type.KEYSYM,
-			GLFW.GLFW_KEY_LEFT_BRACKET, // Клавиша '['
-			"Take Your Minestream"
-		));
+    public static TakeYourMineStreamClient getInstance() {
+        return instance;
+    }
 
-		// Обработка нажатия клавиш
-		ClientTickEvents.END_CLIENT_TICK.register(client -> {
-			while (openConfigScreenKeyBinding.wasPressed()) {
-				client.setScreen(new ModConfigScreen());
-			}
-			while (twitchToggleKeyBinding.wasPressed()) {
-				if (TwitchManager.isConnected()) {
-					TwitchManager.disconnect();
-				} else {
-					TwitchManager.connect(messageSpawner);
-				}
-			}
-		});
+    public IConfigManager getConfigManager() {
+        return configManager;
+    }
 
-		// TwitchManager больше не создается автоматически!
+    public ITwitchManager getTwitchManager() {
+        return twitchManager;
+    }
 
-		// This entrypoint is suitable for setting up client-specific logic, such as rendering.
-		ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
-			dispatcher.register(ClientCommandManager.literal("minestream")
-				.then(ClientCommandManager.literal("test")
-					.then(ClientCommandManager.argument("message", StringArgumentType.greedyString())
-						.executes(context -> {
-							String message = StringArgumentType.getString(context, "message");
-							messageSpawner.setCurrentMessage(message);
-							if (MinecraftClient.getInstance().player != null) {
-								MinecraftClient.getInstance().player.sendMessage(Text.of("Minestream message set to: " + message), false);
-							}
-							return 1;
-						})))
-				.then(ClientCommandManager.literal("stop")
-					.executes(context -> {
-						messageSpawner.setCurrentMessage("");
-						if (MinecraftClient.getInstance().player != null) {
-							MinecraftClient.getInstance().player.sendMessage(Text.of("Minestream message stopped."), false);
-						}
-						TwitchManager.disconnect();
-						return 1;
-					}))
-				.then(ClientCommandManager.literal("twitch")
-					.then(ClientCommandManager.literal("start")
-						.executes(context -> {
-							TwitchManager.connect(messageSpawner);
-							return 1;
-						}))
-					.then(ClientCommandManager.literal("stop")
-						.executes(context -> {
-							TwitchManager.disconnect();
-							return 1;
-						})))
-			);
-		});
-	}
+    public IBanwordManager getBanwordManager() {
+        return banwordManager;
+    }
+
+    public MessageSpawner getMessageSpawner() {
+        return messageSpawner;
+    }
 }

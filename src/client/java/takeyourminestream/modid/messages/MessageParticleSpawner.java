@@ -16,10 +16,10 @@ public class MessageParticleSpawner {
     public static void spawnParticlesForMessage(Message message, MessageParticleManager manager, MinecraftClient client, Vec3d spawnPos) {
         if (client == null || client.textRenderer == null) return;
         Random random = new Random();
-        int min = ModConfig.PARTICLE_MIN_COUNT;
-        int max = ModConfig.PARTICLE_MAX_COUNT;
+        int min = ModConfig.getPARTICLE_MIN_COUNT();
+        int max = ModConfig.getPARTICLE_MAX_COUNT();
         int count = min + random.nextInt(max - min + 1);
-        int lifetime = ModConfig.PARTICLE_LIFETIME_TICKS;
+        int lifetime = ModConfig.getPARTICLE_LIFETIME_TICKS();
         float size = 2.5f + random.nextFloat() * 2.5f;
 
         // Получаем размеры панели сообщения

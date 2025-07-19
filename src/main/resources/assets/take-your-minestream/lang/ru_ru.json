@@ -12,7 +12,7 @@
   "takeyourminestream.config.on": "ВКЛ",
   "takeyourminestream.config.off": "ВЫКЛ",
   "takeyourminestream.config.spawn_mode_label": "Режим спавна сообщений:",
-  "takeyourminestream.config.fop_only": "Только спереди (FOP)",
+  "takeyourminestream.config.fop_only": "Только FOP",
   "takeyourminestream.config.around_player": "Вокруг игрока",
-  "takeyourminestream.config.automoderation": "Автомодерация (банворды):"
+  "takeyourminestream.config.automoderation": "Автомодерация:"
 }

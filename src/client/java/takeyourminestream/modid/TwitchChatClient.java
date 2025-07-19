@@ -23,7 +23,7 @@ public class TwitchChatClient {
     }
 
     private String getRandomColor() {
-        return ModConfig.NICK_COLORS[random.nextInt(ModConfig.NICK_COLORS.length)];
+        return ModConfig.getNICK_COLORS()[random.nextInt(ModConfig.getNICK_COLORS().length)];
     }
 
     private void connect() {
@@ -72,8 +72,8 @@ public class TwitchChatClient {
                         String channel = line.substring(hash + 1, line.indexOf(' ', hash));
                         System.out.println("[" + channel + "] " + user + ": " + message);
                         String filteredMessage = message;
-                        if (ModConfig.ENABLE_AUTOMODERATION && BanwordManager.containsBanword(message)) {
-                            filteredMessage = BanwordManager.censorBanwords(message);
+                        if (ModConfig.isENABLE_AUTOMODERATION() && BanwordManager.getInstance().containsBanwords(message)) {
+                            filteredMessage = BanwordManager.getInstance().filterBanwords(message);
                         }
                         messageSpawner.setCurrentMessage(getRandomColor() + user + ": §r" + filteredMessage);
                     }

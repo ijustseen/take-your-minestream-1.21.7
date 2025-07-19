@@ -1,34 +1,75 @@
 package takeyourminestream.modid;
 
+import takeyourminestream.modid.config.ModConfigData;
+
+/**
+ * Утилитарный класс для доступа к конфигурации
+ * @deprecated Используйте ConfigManager.getInstance().getConfigData() вместо этого класса
+ */
+@Deprecated
 public class ModConfig {
-    // Имя Twitch-канала
-    public static String TWITCH_CHANNEL_NAME = "ijustseen_you";
+    /**
+     * Получает текущую конфигурацию
+     * @return объект конфигурации
+     */
+    public static ModConfigData getCurrentConfig() {
+        return ConfigManager.getInstance().getConfigData();
+    }
 
-    // Длительность жизни сообщения (в тиках)
-    public static int MESSAGE_LIFETIME_TICKS = 80; // 3 секунды при 20 тиках/сек
+    // Обратная совместимость - статические поля теперь возвращают значения из ConfigManager
+    public static String getTWITCH_CHANNEL_NAME() {
+        return (String) ConfigManager.getInstance().getConfigValue("twitchChannelName");
+    }
 
-    // Длительность падения сообщения после истечения срока жизни (в тиках)
-    public static int MESSAGE_FALL_TICKS = 20; // 1 секунда при 20 тиках/сек
+    public static int getMESSAGE_LIFETIME_TICKS() {
+        return (Integer) ConfigManager.getInstance().getConfigValue("messageLifetimeTicks");
+    }
 
-    // Массив цветов для ников
-    public static String[] NICK_COLORS = {"§c", "§9", "§a", "§5"}; // Красный, Синий, Зеленый, Фиолетовый
-    
-    // Не давать сообщению пропадать пока на него смотрит игрок.
-    public static boolean ENABLE_FREEZING_ON_VIEW = true;
-    
-    // Максимальное расстояние для заморозки сообщения (в блоках)
-    public static double MAX_FREEZE_DISTANCE = 15.0; // Увеличено с 10 до 15 блоков
+    public static int getMESSAGE_FALL_TICKS() {
+        return (Integer) ConfigManager.getInstance().getConfigValue("messageFallTicks");
+    }
 
-    // Спавнить сообщения только в зоне видимости игрока (true) или вокруг (false)
-    public static boolean MESSAGES_IN_FRONT_OF_PLAYER_ONLY = false;
+    public static String[] getNICK_COLORS() {
+        return (String[]) ConfigManager.getInstance().getConfigValue("nickColors");
+    }
 
-    // Минимальное количество партиклов при исчезновении сообщения
-    public static int PARTICLE_MIN_COUNT = 10;
-    // Максимальное количество партиклов при исчезновении сообщения
-    public static int PARTICLE_MAX_COUNT = 20;
-    // Длительность анимации партиклов (в тиках)
-    public static int PARTICLE_LIFETIME_TICKS = 20; // 1 секунда при 20 тиках/сек
+    public static boolean isENABLE_FREEZING_ON_VIEW() {
+        return (Boolean) ConfigManager.getInstance().getConfigValue("enableFreezingOnView");
+    }
 
-    // Автоматическая модерация сообщений (банворды)
-    public static boolean ENABLE_AUTOMODERATION = false;
+    public static double getMAX_FREEZE_DISTANCE() {
+        return (Double) ConfigManager.getInstance().getConfigValue("maxFreezeDistance");
+    }
+
+    public static boolean isMESSAGES_IN_FRONT_OF_PLAYER_ONLY() {
+        return (Boolean) ConfigManager.getInstance().getConfigValue("messagesInFrontOfPlayerOnly");
+    }
+
+    public static int getPARTICLE_MIN_COUNT() {
+        return (Integer) ConfigManager.getInstance().getConfigValue("particleMinCount");
+    }
+
+    public static int getPARTICLE_MAX_COUNT() {
+        return (Integer) ConfigManager.getInstance().getConfigValue("particleMaxCount");
+    }
+
+    public static int getPARTICLE_LIFETIME_TICKS() {
+        return (Integer) ConfigManager.getInstance().getConfigValue("particleLifetimeTicks");
+    }
+
+    public static boolean isENABLE_AUTOMODERATION() {
+        return (Boolean) ConfigManager.getInstance().getConfigValue("enableAutomoderation");
+    }
+
+    public static void setENABLE_FREEZING_ON_VIEW(boolean value) {
+        ConfigManager.getInstance().setConfigValue("enableFreezingOnView", value);
+    }
+
+    public static void setMESSAGES_IN_FRONT_OF_PLAYER_ONLY(boolean value) {
+        ConfigManager.getInstance().setConfigValue("messagesInFrontOfPlayerOnly", value);
+    }
+
+    public static void setENABLE_AUTOMODERATION(boolean value) {
+        ConfigManager.getInstance().setConfigValue("enableAutomoderation", value);
+    }
 } 

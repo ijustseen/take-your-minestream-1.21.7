@@ -35,7 +35,7 @@ public class MessageLifecycleManager {
         tickCounter++;
         
         // Обновляем замороженное время для всех сообщений
-        if (ModConfig.ENABLE_FREEZING_ON_VIEW) {
+        if (ModConfig.isENABLE_FREEZING_ON_VIEW()) {
             for (Message message : activeMessages) {
                 if (MessageViewDetector.isPlayerLookingAtMessage(client, message.getPosition(), message.getYaw(), message.getPitch(), message.getText(), 
                                                                tickCounter, message.getSpawnTick(), message.getFrozenTicks())) {
@@ -45,9 +45,9 @@ public class MessageLifecycleManager {
         }
         
         // Удаляем старые сообщения с учетом замороженного времени
-        int fallTicks = ModConfig.MESSAGE_FALL_TICKS;
-        int removeAfter = ModConfig.MESSAGE_LIFETIME_TICKS + fallTicks;
-        if (ModConfig.ENABLE_FREEZING_ON_VIEW) {
+        int fallTicks = ModConfig.getMESSAGE_FALL_TICKS();
+        int removeAfter = ModConfig.getMESSAGE_LIFETIME_TICKS() + fallTicks;
+        if (ModConfig.isENABLE_FREEZING_ON_VIEW()) {
             activeMessages.removeIf(message -> {
                 int effectiveAge = message.getEffectiveAge(tickCounter);
                 // Спавним партиклы за тик до удаления

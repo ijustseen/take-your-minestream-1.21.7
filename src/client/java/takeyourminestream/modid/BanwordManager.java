@@ -2,6 +2,7 @@ package takeyourminestream.modid;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import takeyourminestream.modid.interfaces.IBanwordManager;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.InputStreamReader;
@@ -14,27 +15,51 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
-public class BanwordManager {
+public class BanwordManager implements IBanwordManager {
+    private static final Logger LOGGER = Logger.getLogger(BanwordManager.class.getName());
     private static final String RESOURCE_PATH = "/assets/take-your-minestream/banned_words.json";
-    private static final Set<String> BANWORDS = new HashSet<>();
+    private static BanwordManager instance;
+    
+    private final Set<String> banwords = new HashSet<>();
 
-    public static void loadBanwords() {
+    private BanwordManager() {
+        loadBanwords();
+    }
+
+    public static BanwordManager getInstance() {
+        if (instance == null) {
+            instance = new BanwordManager();
+        }
+        return instance;
+    }
+
+    @Override
+    public void loadBanwords() {
         try (InputStreamReader reader = new InputStreamReader(
                 BanwordManager.class.getClassLoader().getResourceAsStream("assets/take-your-minestream/banned_words.json"),
                 StandardCharsets.UTF_8)) {
             Type listType = new TypeToken<List<String>>(){}.getType();
             List<String> words = new Gson().fromJson(reader, listType);
-            BANWORDS.clear();
-            if (words != null) BANWORDS.addAll(words);
+            banwords.clear();
+            if (words != null) {
+                banwords.addAll(words);
+                LOGGER.info("Загружено " + words.size() + " банвордов");
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.severe("Ошибка при загрузке банвордов: " + e.getMessage());
         }
     }
 
-    public static boolean containsBanword(String message) {
+    @Override
+    public boolean containsBanwords(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            return false;
+        }
+        
         String lower = Normalizer.normalize(message, Normalizer.Form.NFC).toLowerCase();
-        for (String word : BANWORDS) {
+        for (String word : banwords) {
             String normWord = Normalizer.normalize(word, Normalizer.Form.NFC).toLowerCase();
             if (lower.contains(normWord)) {
                 return true;
@@ -43,9 +68,14 @@ public class BanwordManager {
         return false;
     }
 
-    public static String censorBanwords(String message) {
+    @Override
+    public String filterBanwords(String message) {
+        if (message == null || message.trim().isEmpty()) {
+            return message;
+        }
+        
         String censored = Normalizer.normalize(message, Normalizer.Form.NFC);
-        for (String word : BANWORDS) {
+        for (String word : banwords) {
             String normWord = Normalizer.normalize(word, Normalizer.Form.NFC);
             if (normWord.length() > 0) {
                 // Создаем маску: первая буква + звездочки для остальных
@@ -58,7 +88,25 @@ public class BanwordManager {
         return censored;
     }
 
-    public static Set<String> getBanwords() {
-        return Collections.unmodifiableSet(BANWORDS);
+    @Override
+    public void addBanword(String banword) {
+        if (banword != null && !banword.trim().isEmpty()) {
+            banwords.add(banword.trim().toLowerCase());
+            LOGGER.info("Добавлен банворд: " + banword);
+        }
+    }
+
+    @Override
+    public void removeBanword(String banword) {
+        if (banword != null && !banword.trim().isEmpty()) {
+            boolean removed = banwords.remove(banword.trim().toLowerCase());
+            if (removed) {
+                LOGGER.info("Удален банворд: " + banword);
+            }
+        }
+    }
+
+    public Set<String> getBanwords() {
+        return Collections.unmodifiableSet(banwords);
     }
 } 
