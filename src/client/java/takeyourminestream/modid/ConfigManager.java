@@ -23,6 +23,7 @@ public class ConfigManager {
                     ModConfig.ENABLE_FREEZING_ON_VIEW = data.enableFreezingOnView;
                     ModConfig.MAX_FREEZE_DISTANCE = data.maxFreezeDistance;
                     ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY = data.messagesInFrontOfPlayerOnly;
+                    ModConfig.ENABLE_AUTOMODERATION = data.enableAutomoderation;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -38,6 +39,7 @@ public class ConfigManager {
         data.enableFreezingOnView = ModConfig.ENABLE_FREEZING_ON_VIEW;
         data.maxFreezeDistance = ModConfig.MAX_FREEZE_DISTANCE;
         data.messagesInFrontOfPlayerOnly = ModConfig.MESSAGES_IN_FRONT_OF_PLAYER_ONLY;
+        data.enableAutomoderation = ModConfig.ENABLE_AUTOMODERATION;
         try (FileWriter writer = new FileWriter(CONFIG_FILE)) {
             GSON.toJson(data, writer);
         } catch (IOException e) {
@@ -52,5 +54,6 @@ public class ConfigManager {
         public boolean enableFreezingOnView;
         public double maxFreezeDistance;
         public boolean messagesInFrontOfPlayerOnly;
+        public boolean enableAutomoderation;
     }
 } 

@@ -71,7 +71,11 @@ public class TwitchChatClient {
                         String message = line.substring(colon + 2);
                         String channel = line.substring(hash + 1, line.indexOf(' ', hash));
                         System.out.println("[" + channel + "] " + user + ": " + message);
-                        messageSpawner.setCurrentMessage(getRandomColor() + user + ": §r" + message);
+                        String filteredMessage = message;
+                        if (ModConfig.ENABLE_AUTOMODERATION && BanwordManager.containsBanword(message)) {
+                            filteredMessage = BanwordManager.censorBanwords(message);
+                        }
+                        messageSpawner.setCurrentMessage(getRandomColor() + user + ": §r" + filteredMessage);
                     }
                 }
             }

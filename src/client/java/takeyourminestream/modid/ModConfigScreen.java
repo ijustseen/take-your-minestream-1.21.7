@@ -16,6 +16,7 @@ public class ModConfigScreen extends Screen {
     private TextFieldWidget maxFreezeDistanceField;
     private ButtonWidget freezingToggleButton;
     private ButtonWidget inFrontOnlyToggleButton;
+    private ButtonWidget automoderationToggleButton;
     private final @Nullable Screen parent;
     private String initialChannelName;
 
@@ -96,6 +97,17 @@ public class ModConfigScreen extends Screen {
         this.addDrawableChild(maxFreezeDistanceField);
         y += spacing + 6;
 
+        // Кнопка для переключения ENABLE_AUTOMODERATION
+        automoderationToggleButton = ButtonWidget.builder(
+            Text.translatable(ModConfig.ENABLE_AUTOMODERATION ? "takeyourminestream.config.on" : "takeyourminestream.config.off"),
+            btn -> {
+                ModConfig.ENABLE_AUTOMODERATION = !ModConfig.ENABLE_AUTOMODERATION;
+                btn.setMessage(Text.translatable(ModConfig.ENABLE_AUTOMODERATION ? "takeyourminestream.config.on" : "takeyourminestream.config.off"));
+            }
+        ).dimensions(centerX + 10, y, fieldWidth, fieldHeight).build();
+        this.addDrawableChild(automoderationToggleButton);
+        y += spacing;
+
         // Кнопка "Сохранить и выйти"
         int saveButtonWidth = 160;
         this.addDrawableChild(ButtonWidget.builder(Text.translatable("takeyourminestream.config.save_and_exit"), btn -> {
@@ -130,12 +142,14 @@ public class ModConfigScreen extends Screen {
         int x4 = freezingToggleButton.getX() - labelWidth - labelOffsetX;
         int x5 = maxFreezeDistanceField.getX() - labelWidth - labelOffsetX;
         int x6 = inFrontOnlyToggleButton.getX() - labelWidth - labelOffsetX;
+        int x7 = automoderationToggleButton.getX() - labelWidth - labelOffsetX;
         int y1 = channelNameField.getY() + (fieldHeight - fontHeight) / 2;
         int y2 = messageLifetimeField.getY() + (fieldHeight - fontHeight) / 2;
         int y3 = messageFallField.getY() + (fieldHeight - fontHeight) / 2;
         int y4 = freezingToggleButton.getY() + (fieldHeight - fontHeight) / 2;
         int y5 = maxFreezeDistanceField.getY() + (fieldHeight - fontHeight) / 2;
         int y6 = inFrontOnlyToggleButton.getY() + (fieldHeight - fontHeight) / 2;
+        int y7 = automoderationToggleButton.getY() + (fieldHeight - fontHeight) / 2;
         // Имя Twitch-канала
         context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.channel_name"), x1, y1, labelColor, true);
         // Время жизни сообщения (тики):
@@ -151,6 +165,8 @@ public class ModConfigScreen extends Screen {
         context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.max_freeze_distance_blocks"), x5, y5 + fontHeight / 2, labelColor, true);
         // Спавнить только спереди
         context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.spawn_mode_label"), x6, y6, labelColor, true);
+        // Автомодерация
+        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.automoderation"), x7, y7, labelColor, true);
     }
 
     @Override

@@ -28,4 +28,7 @@ public class ModConfig {
     public static int PARTICLE_MAX_COUNT = 20;
     // Длительность анимации партиклов (в тиках)
     public static int PARTICLE_LIFETIME_TICKS = 20; // 1 секунда при 20 тиках/сек
+
+    // Автоматическая модерация сообщений (банворды)
+    public static boolean ENABLE_AUTOMODERATION = false;
 } 

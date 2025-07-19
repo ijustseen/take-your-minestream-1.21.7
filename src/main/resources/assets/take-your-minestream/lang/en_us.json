@@ -13,5 +13,6 @@
   "takeyourminestream.config.off": "OFF",
   "takeyourminestream.config.spawn_mode_label": "Message Spawn Mode:",
   "takeyourminestream.config.fop_only": "FOP only",
-  "takeyourminestream.config.around_player": "Around player"
+  "takeyourminestream.config.around_player": "Around player",
+  "takeyourminestream.config.automoderation": "Automoderation (banwords):"
 }

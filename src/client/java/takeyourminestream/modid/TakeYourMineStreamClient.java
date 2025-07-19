@@ -26,6 +26,7 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 		ConfigManager.loadConfig();
 		// Инициализируем систему сообщений через фабрику
 		messageSpawner = MessageSystemFactory.createMessageSystem();
+		BanwordManager.loadBanwords();
 
 		// Регистрация KeyBinding для открытия экрана настроек
 		openConfigScreenKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
