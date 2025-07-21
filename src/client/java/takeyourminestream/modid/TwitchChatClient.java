@@ -75,7 +75,7 @@ public class TwitchChatClient {
                         if (ModConfig.isENABLE_AUTOMODERATION() && BanwordManager.getInstance().containsBanwords(message)) {
                             filteredMessage = BanwordManager.getInstance().filterBanwords(message);
                         }
-                        messageSpawner.setCurrentMessage(getRandomColor() + user + ": §r" + filteredMessage);
+                        messageSpawner.setCurrentMessage(getRandomColor() + user + ":§r " + filteredMessage);
                     }
                 }
             }

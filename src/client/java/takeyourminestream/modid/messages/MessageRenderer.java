@@ -97,11 +97,16 @@ public class MessageRenderer {
 
         List<OrderedText> wrappedText = textRenderer.wrapLines(Text.of(message.getText()), 120);
         float totalTextHeight = wrappedText.size() * textRenderer.fontHeight;
-        int textWidth = textRenderer.getWidth(wrappedText.get(0));
-        int panelWidth = textWidth + PANEL_PADDING_X * 2;
+        // Найти максимальную ширину среди всех строк
+        int maxTextWidth = 0;
+        for (OrderedText line : wrappedText) {
+            int w = textRenderer.getWidth(line);
+            if (w > maxTextWidth) maxTextWidth = w;
+        }
+        int panelWidth = maxTextWidth + PANEL_PADDING_X * 2;
         int panelHeight = (int)totalTextHeight + PANEL_PADDING_Y * 2;
         // Центрируем текст и панель + применяем падение
-        matrices.translate(-textWidth / 2.0f, -totalTextHeight / 2.0f + fallOffsetY, 0);
+        matrices.translate(-maxTextWidth / 2.0f, -totalTextHeight / 2.0f + fallOffsetY, 0);
         // Рендерим панель
         renderPanel9Slice(matrices, -PANEL_PADDING_X, -PANEL_PADDING_Y, panelWidth, panelHeight, 1.0f, consumers);
         // Рендерим текст
