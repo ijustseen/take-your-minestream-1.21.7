@@ -24,20 +24,30 @@ public class MessageSpawner {
                 if (messageQueue.canSpawnMessage(lifecycleManager.getTickCounter())) {
                     String messageText = messageQueue.dequeueMessage(lifecycleManager.getTickCounter());
                     if (messageText != null) {
-                        // Генерируем позицию и создаем новое сообщение
-                        var position = takeyourminestream.modid.ModConfig.isMESSAGES_IN_FRONT_OF_PLAYER_ONLY()
-                            ? MessagePosition.generatePositionInFrontOfPlayer(client)
-                            : MessagePosition.generateRandomPosition(client);
-                        // Вычисляем yaw/pitch на игрока
-                        var playerEyePos = client.player.getEyePos();
-                        double dx = playerEyePos.x - position.x;
-                        double dy = playerEyePos.y - position.y;
-                        double dz = playerEyePos.z - position.z;
-                        double distXZ = Math.sqrt(dx * dx + dz * dz);
-                        float yaw = (float)(MathHelper.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0f;
-                        float pitch = (float)-(MathHelper.atan2(dy, distXZ) * (180.0 / Math.PI));
-                        var message = new Message(messageText, position, lifecycleManager.getTickCounter(), yaw, pitch);
-                        lifecycleManager.addMessage(message);
+                        var spawnMode = takeyourminestream.modid.ModConfig.getMESSAGE_SPAWN_MODE();
+                        
+                        // В HUD режиме создаем сообщение без 3D позиции
+                        if (spawnMode == takeyourminestream.modid.config.MessageSpawnMode.HUD_WIDGET) {
+                            // Для HUD режима создаем сообщение с нулевой позицией
+                            var position = net.minecraft.util.math.Vec3d.ZERO;
+                            var message = new Message(messageText, position, lifecycleManager.getTickCounter(), 0, 0);
+                            lifecycleManager.addMessage(message);
+                        } else {
+                            // Для 3D режимов генерируем позицию в пространстве
+                            var position = (spawnMode == takeyourminestream.modid.config.MessageSpawnMode.FRONT_OF_PLAYER)
+                                ? MessagePosition.generatePositionInFrontOfPlayer(client)
+                                : MessagePosition.generateRandomPosition(client);
+                            // Вычисляем yaw/pitch на игрока
+                            var playerEyePos = client.player.getEyePos();
+                            double dx = playerEyePos.x - position.x;
+                            double dy = playerEyePos.y - position.y;
+                            double dz = playerEyePos.z - position.z;
+                            double distXZ = Math.sqrt(dx * dx + dz * dz);
+                            float yaw = (float)(MathHelper.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0f;
+                            float pitch = (float)-(MathHelper.atan2(dy, distXZ) * (180.0 / Math.PI));
+                            var message = new Message(messageText, position, lifecycleManager.getTickCounter(), yaw, pitch);
+                            lifecycleManager.addMessage(message);
+                        }
                     }
                 }
             }

@@ -14,5 +14,6 @@
   "takeyourminestream.config.spawn_mode_label": "Режим спавна сообщений:",
   "takeyourminestream.config.fop_only": "Только FOP",
   "takeyourminestream.config.around_player": "Вокруг игрока",
+  "takeyourminestream.config.hud_widget": "HUD виджет",
   "takeyourminestream.config.automoderation": "Автомодерация:"
 }

@@ -15,6 +15,7 @@ public class MessageSystemFactory {
         MessageLifecycleManager lifecycleManager = new MessageLifecycleManager(particleManager);
         MessageSpawner messageSpawner = new MessageSpawner(messageQueue, lifecycleManager);
         new MessageRenderer(lifecycleManager, particleManager);
+        new MessageHudRenderer(lifecycleManager);
         return messageSpawner;
     }
 } 

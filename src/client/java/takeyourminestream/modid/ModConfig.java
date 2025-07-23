@@ -72,4 +72,12 @@ public class ModConfig {
     public static void setENABLE_AUTOMODERATION(boolean value) {
         ConfigManager.getInstance().setConfigValue("enableAutomoderation", value);
     }
+    
+    public static takeyourminestream.modid.config.MessageSpawnMode getMESSAGE_SPAWN_MODE() {
+        return (takeyourminestream.modid.config.MessageSpawnMode) ConfigManager.getInstance().getConfigValue("messageSpawnMode");
+    }
+    
+    public static void setMESSAGE_SPAWN_MODE(takeyourminestream.modid.config.MessageSpawnMode value) {
+        ConfigManager.getInstance().setConfigValue("messageSpawnMode", value);
+    }
 } 

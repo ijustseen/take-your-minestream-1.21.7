@@ -95,6 +95,9 @@ public class ConfigManager implements IConfigManager {
             case "messagesInFrontOfPlayerOnly":
                 configData.setMessagesInFrontOfPlayerOnly((Boolean) value);
                 break;
+            case "messageSpawnMode":
+                configData.setMessageSpawnMode((takeyourminestream.modid.config.MessageSpawnMode) value);
+                break;
             case "enableAutomoderation":
                 configData.setEnableAutomoderation((Boolean) value);
                 break;
@@ -114,6 +117,7 @@ public class ConfigManager implements IConfigManager {
         configCache.put("enableFreezingOnView", configData.isEnableFreezingOnView());
         configCache.put("maxFreezeDistance", configData.getMaxFreezeDistance());
         configCache.put("messagesInFrontOfPlayerOnly", configData.isMessagesInFrontOfPlayerOnly());
+        configCache.put("messageSpawnMode", configData.getMessageSpawnMode());
         configCache.put("enableAutomoderation", configData.isEnableAutomoderation());
         configCache.put("particleMinCount", configData.getParticleMinCount());
         configCache.put("particleMaxCount", configData.getParticleMaxCount());

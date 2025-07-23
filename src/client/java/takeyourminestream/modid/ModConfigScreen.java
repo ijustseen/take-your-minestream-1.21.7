@@ -8,6 +8,7 @@ import net.minecraft.text.Text;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import org.jetbrains.annotations.Nullable;
+import takeyourminestream.modid.config.MessageSpawnMode;
 
 public class ModConfigScreen extends Screen {
     private TextFieldWidget channelNameField;
@@ -77,12 +78,14 @@ public class ModConfigScreen extends Screen {
         this.addDrawableChild(freezingToggleButton);
         y += spacing;
 
-        // Кнопка для переключения режима спавна (MESSAGES_IN_FRONT_OF_PLAYER_ONLY)
+        // Кнопка для переключения режима спавна сообщений
         inFrontOnlyToggleButton = ButtonWidget.builder(
-            Text.translatable(ModConfig.isMESSAGES_IN_FRONT_OF_PLAYER_ONLY() ? "takeyourminestream.config.fop_only" : "takeyourminestream.config.around_player"),
+            getSpawnModeButtonText(),
             btn -> {
-                ModConfig.setMESSAGES_IN_FRONT_OF_PLAYER_ONLY(!ModConfig.isMESSAGES_IN_FRONT_OF_PLAYER_ONLY());
-                btn.setMessage(Text.translatable(ModConfig.isMESSAGES_IN_FRONT_OF_PLAYER_ONLY() ? "takeyourminestream.config.fop_only" : "takeyourminestream.config.around_player"));
+                var currentMode = ModConfig.getMESSAGE_SPAWN_MODE();
+                var nextMode = currentMode.next();
+                ModConfig.setMESSAGE_SPAWN_MODE(nextMode);
+                btn.setMessage(getSpawnModeButtonText());
             }
         ).dimensions(centerX + 10, y, fieldWidth, fieldHeight).build();
         this.addDrawableChild(inFrontOnlyToggleButton);
@@ -121,6 +124,20 @@ public class ModConfigScreen extends Screen {
 
     private String getFreezingButtonText() {
         return "Заморозка при взгляде: " + (ModConfig.isENABLE_FREEZING_ON_VIEW() ? "ВКЛ" : "ВЫКЛ");
+    }
+    
+    private Text getSpawnModeButtonText() {
+        var mode = ModConfig.getMESSAGE_SPAWN_MODE();
+        switch (mode) {
+            case AROUND_PLAYER:
+                return Text.translatable("takeyourminestream.config.around_player");
+            case FRONT_OF_PLAYER:
+                return Text.translatable("takeyourminestream.config.fop_only");
+            case HUD_WIDGET:
+                return Text.translatable("takeyourminestream.config.hud_widget");
+            default:
+                return Text.translatable("takeyourminestream.config.around_player");
+        }
     }
 
     @Override

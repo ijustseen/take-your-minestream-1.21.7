@@ -42,6 +42,12 @@ public class MessageRenderer {
         WorldRenderEvents.AFTER_ENTITIES.register(context -> {
             MinecraftClient client = MinecraftClient.getInstance();
             if (client.player == null || client.world == null) return;
+            
+            // Не рендерим 3D сообщения в HUD режиме
+            var spawnMode = takeyourminestream.modid.ModConfig.getMESSAGE_SPAWN_MODE();
+            if (spawnMode == takeyourminestream.modid.config.MessageSpawnMode.HUD_WIDGET) {
+                return;
+            }
 
             MatrixStack matrices = context.matrixStack();
             TextRenderer textRenderer = client.textRenderer;
