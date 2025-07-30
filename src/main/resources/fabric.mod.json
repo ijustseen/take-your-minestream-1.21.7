@@ -3,13 +3,13 @@
 	"id": "take-your-minestream",
 	"version": "${version}",
 	"name": "Take Your MineStream",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "A minecraft modification for streamers, that allows messages from your Twitch chat to be displayed in your game. In-Game Settings: Access configuration screen with key binding (default: ]) Twitch Toggle: Toggle Twitch connection with key binding (default: [)",
 	"authors": [
-		"Me!"
+		"ijustseen"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"homepage": "https://modrinth.com/mod/take-your-minestream",
+		"sources": "https://github.com/ijustseen/take-your-minestream-1.21.7"
 	},
 	"license": "CC0-1.0",
 	"icon": "assets/take-your-minestream/icon.png",
