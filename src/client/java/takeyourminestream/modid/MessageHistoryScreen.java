@@ -25,7 +25,6 @@ public class MessageHistoryScreen extends Screen {
     private int scrollOffset = 0;
     private final int lineHeight = 12;
     private final int padding = 10;
-    private final int maxMessageWidth = 400;
     private List<HistoryEntry> historyEntries = new ArrayList<>();
     
     public MessageHistoryScreen(@Nullable Screen parent, MessageLifecycleManager lifecycleManager) {
@@ -82,11 +81,15 @@ public class MessageHistoryScreen extends Screen {
         
         List<Message> allMessages = lifecycleManager.getAllMessages();
         
+        // Вычисляем максимальную ширину текста с учетом реальных размеров фонового блока
+        int contentWidth = this.width - padding * 2; // Ширина фонового блока
+        int textAreaWidth = contentWidth - padding * 2 - 10; // Отступы внутри блока + место для скроллбара
+        
         for (Message message : allMessages) {
-            // Разбиваем длинные сообщения на строки
+            // Разбиваем длинные сообщения на строки с учетом реальной ширины
             List<OrderedText> wrappedLines = this.textRenderer.wrapLines(
                 Text.of(message.getText()), 
-                maxMessageWidth - padding * 2
+                textAreaWidth
             );
             
             for (OrderedText line : wrappedLines) {
@@ -123,21 +126,23 @@ public class MessageHistoryScreen extends Screen {
         // Рендерим фон области сообщений
         context.fill(padding, contentTop, this.width - padding, contentBottom, 0x40000000);
         
-        // Рендерим сообщения с учетом прокрутки
+        // Рендерим сообщения с учетом прокрутки и границ фонового блока
         int y = contentTop + padding - scrollOffset;
+        int textX = padding * 2; // Отступ от левого края фонового блока
         int visibleLines = 0;
         
         for (HistoryEntry entry : historyEntries) {
-            if (y + lineHeight > contentTop && y < contentBottom) {
-                // Сообщение видимо на экране
+            // Проверяем, что сообщение находится в видимой области фонового блока
+            if (y + lineHeight > contentTop + padding && y < contentBottom - padding) {
+                // Сообщение видимо на экране и внутри фонового блока
                 int textColor = getMessageColor(entry.spawnTick);
-                context.drawText(this.textRenderer, entry.text, padding * 2, y, textColor, true);
+                context.drawText(this.textRenderer, entry.text, textX, y, textColor, true);
                 visibleLines++;
             }
             y += lineHeight;
             
             // Прекращаем рендеринг если вышли за пределы видимой области
-            if (y > contentBottom) break;
+            if (y > contentBottom - padding) break;
         }
         
         // Индикатор прокрутки
