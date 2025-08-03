@@ -17,7 +17,6 @@ public class KeyBindingManager {
     private final ITwitchManager twitchManager;
     private final MessageSpawner messageSpawner;
     private KeyBinding openConfigScreenKeyBinding;
-    private KeyBinding twitchToggleKeyBinding;
 
     public KeyBindingManager(ITwitchManager twitchManager, MessageSpawner messageSpawner) {
         this.twitchManager = twitchManager;
@@ -33,21 +32,10 @@ public class KeyBindingManager {
             "category.takeyourminestream.general"
         ));
 
-        // Регистрация KeyBinding для Twitch toggle
-        twitchToggleKeyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "key.takeyourminestream.toggletwitch",
-            InputUtil.Type.KEYSYM,
-            GLFW.GLFW_KEY_LEFT_BRACKET, // Клавиша '['
-            "category.takeyourminestream.general"
-        ));
-
         // Обработка нажатия клавиш
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (openConfigScreenKeyBinding.wasPressed()) {
                 handleOpenConfigScreen();
-            }
-            while (twitchToggleKeyBinding.wasPressed()) {
-                handleTwitchToggle();
             }
         });
     }
@@ -62,24 +50,7 @@ public class KeyBindingManager {
         }
     }
 
-    private void handleTwitchToggle() {
-        try {
-            if (twitchManager.isConnected()) {
-                twitchManager.disconnect();
-            } else {
-                twitchManager.connect(messageSpawner);
-            }
-        } catch (Exception e) {
-            Logger.error("Ошибка при переключении Twitch", e);
-            Logger.sendErrorToPlayer("Ошибка при переключении Twitch");
-        }
-    }
-
     public KeyBinding getOpenConfigScreenKeyBinding() {
         return openConfigScreenKeyBinding;
-    }
-
-    public KeyBinding getTwitchToggleKeyBinding() {
-        return twitchToggleKeyBinding;
     }
 } 

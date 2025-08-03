@@ -5,6 +5,8 @@ import net.minecraft.client.gui.widget.ButtonWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.text.Text;
+import net.minecraft.text.MutableText;
+import net.minecraft.util.Formatting;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import org.jetbrains.annotations.Nullable;
@@ -257,7 +259,13 @@ public class ModConfigScreen extends Screen {
                 var lifecycleManager = messageSpawner.getLifecycleManager();
                 this.client.setScreen(new MessageHistoryScreen(this, lifecycleManager));
             }
-        }).dimensions(centerX - buttonWidth - buttonSpacing / 2, buttonY, buttonWidth, 20).build());
+        }).dimensions(centerX - buttonWidth * 3 / 2 - buttonSpacing, buttonY, buttonWidth, 20).build());
+
+        // Кнопка переключения Twitch
+        this.addDrawableChild(ButtonWidget.builder(getTwitchToggleButtonText(), btn -> {
+            handleTwitchToggle();
+            btn.setMessage(getTwitchToggleButtonText());
+        }).dimensions(centerX - buttonWidth / 2, buttonY, buttonWidth, 20).build());
 
         // Кнопка "Готово"
         this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.done"), btn -> {
@@ -266,7 +274,7 @@ public class ModConfigScreen extends Screen {
             }
             ConfigManager.getInstance().saveConfig();
             this.close();
-        }).dimensions(centerX + buttonSpacing / 2, buttonY, buttonWidth, 20).build());
+        }).dimensions(centerX + buttonWidth / 2 + buttonSpacing, buttonY, buttonWidth, 20).build());
     }
 
 
@@ -299,6 +307,37 @@ public class ModConfigScreen extends Screen {
                 return Text.translatable("takeyourminestream.config.scale_huge");
             default:
                 return Text.translatable("takeyourminestream.config.scale_normal");
+        }
+    }
+    
+    private Text getTwitchToggleButtonText() {
+        var twitchManager = TwitchManager.getInstance(ConfigManager.getInstance());
+        boolean isConnected = twitchManager.isConnected();
+        
+        String statusKey = isConnected ? "takeyourminestream.config.twitch_on" : "takeyourminestream.config.twitch_off";
+        MutableText statusText = Text.translatable(statusKey);
+        
+        // Добавляем цветной индикатор
+        MutableText indicator = Text.literal(" ●").formatted(isConnected ? Formatting.GREEN : Formatting.RED);
+        
+        return statusText.append(indicator);
+    }
+    
+    private void handleTwitchToggle() {
+        try {
+            var twitchManager = TwitchManager.getInstance(ConfigManager.getInstance());
+            var messageSpawner = TakeYourMineStreamClient.getStaticMessageSpawner();
+            
+            if (twitchManager.isConnected()) {
+                twitchManager.disconnect();
+            } else {
+                if (messageSpawner != null) {
+                    twitchManager.connect(messageSpawner);
+                }
+            }
+        } catch (Exception e) {
+            // Логируем ошибку, но не показываем игроку в GUI
+            TakeYourMineStream.LOGGER.error("Ошибка при переключении Twitch", e);
         }
     }
 

@@ -23,6 +23,8 @@
   "takeyourminestream.config.scale_large": "Большие",
   "takeyourminestream.config.scale_huge": "Огромные",
   "takeyourminestream.config.message_history": "История сообщений",
+  "takeyourminestream.config.twitch_on": "Вкл",
+  "takeyourminestream.config.twitch_off": "Выкл",
   "takeyourminestream.config.category.general": "Общие",
   "takeyourminestream.config.category.messages": "Сообщения",
   "takeyourminestream.config.category.behavior": "Поведение",
