@@ -99,7 +99,12 @@ public class MessageRenderer {
         );
         matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-message.getYaw()));
         matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(message.getPitch()));
-        matrices.scale(0.025f, -0.025f, 0.025f);
+        
+        // Применяем масштаб из конфигурации
+        float baseScale = 0.025f;
+        float configScale = takeyourminestream.modid.ModConfig.getMESSAGE_SCALE().getScale();
+        float finalScale = baseScale * configScale;
+        matrices.scale(finalScale, -finalScale, finalScale);
 
         List<OrderedText> wrappedText = textRenderer.wrapLines(Text.of(message.getText()), 120);
         float totalTextHeight = wrappedText.size() * textRenderer.fontHeight;

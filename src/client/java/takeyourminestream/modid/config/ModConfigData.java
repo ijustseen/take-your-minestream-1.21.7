@@ -15,6 +15,7 @@ public class ModConfigData {
     private int particleMaxCount = 20;
     private int particleLifetimeTicks = 20;
     private String[] nickColors = {"§c", "§9", "§a", "§5"};
+    private MessageScale messageScale = MessageScale.NORMAL;
 
     // Геттеры
     public String getTwitchChannelName() { return twitchChannelName; }
@@ -28,6 +29,7 @@ public class ModConfigData {
     public int getParticleMaxCount() { return particleMaxCount; }
     public int getParticleLifetimeTicks() { return particleLifetimeTicks; }
     public String[] getNickColors() { return nickColors; }
+    public MessageScale getMessageScale() { return messageScale; }
 
     // Сеттеры
     public void setTwitchChannelName(String twitchChannelName) { this.twitchChannelName = twitchChannelName; }
@@ -41,6 +43,7 @@ public class ModConfigData {
     public void setParticleMaxCount(int particleMaxCount) { this.particleMaxCount = particleMaxCount; }
     public void setParticleLifetimeTicks(int particleLifetimeTicks) { this.particleLifetimeTicks = particleLifetimeTicks; }
     public void setNickColors(String[] nickColors) { this.nickColors = nickColors; }
+    public void setMessageScale(MessageScale messageScale) { this.messageScale = messageScale; }
     
     // Методы для обратной совместимости
     public boolean isMessagesInFrontOfPlayerOnly() { 

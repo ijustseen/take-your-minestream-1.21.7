@@ -9,17 +9,67 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import org.jetbrains.annotations.Nullable;
 import takeyourminestream.modid.config.MessageSpawnMode;
+import takeyourminestream.modid.config.MessageScale;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ModConfigScreen extends Screen {
-    private TextFieldWidget channelNameField;
-    private TextFieldWidget messageLifetimeField;
-    private TextFieldWidget messageFallField;
-    private TextFieldWidget maxFreezeDistanceField;
-    private ButtonWidget freezingToggleButton;
-    private ButtonWidget inFrontOnlyToggleButton;
-    private ButtonWidget automoderationToggleButton;
     private final @Nullable Screen parent;
     private String initialChannelName;
+    
+    // Категории настроек
+    private enum ConfigCategory {
+        GENERAL("takeyourminestream.config.category.general"),
+        MESSAGES("takeyourminestream.config.category.messages"),
+        BEHAVIOR("takeyourminestream.config.category.behavior");
+        
+        private final String translationKey;
+        
+        ConfigCategory(String translationKey) {
+            this.translationKey = translationKey;
+        }
+        
+        public Text getText() {
+            return Text.translatable(translationKey);
+        }
+    }
+    
+    private ConfigCategory currentCategory = ConfigCategory.GENERAL;
+    private List<ButtonWidget> categoryButtons = new ArrayList<>();
+    private List<ConfigEntry> configEntries = new ArrayList<>();
+    
+    // Параметры интерфейса
+    private static final int HEADER_HEIGHT = 50;
+    private static final int FOOTER_HEIGHT = 30;
+    private static final int CATEGORY_BUTTON_HEIGHT = 20;
+    private static final int ENTRY_HEIGHT = 24;
+    private static final int ENTRY_SPACING = 4;
+    private static final int SIDE_MARGIN = 20;
+    private static final int LABEL_WIDTH = 200;
+    private static final int CONTROL_WIDTH = 120;
+    
+    private int scrollOffset = 0;
+
+    // Класс для представления элемента конфигурации
+    private static class ConfigEntry {
+        public final String labelKey;
+        public final String descriptionKey;
+        public final ConfigEntryType type;
+        public final Object widget;
+        public final ConfigCategory category;
+        
+        public ConfigEntry(String labelKey, String descriptionKey, ConfigEntryType type, Object widget, ConfigCategory category) {
+            this.labelKey = labelKey;
+            this.descriptionKey = descriptionKey;
+            this.type = type;
+            this.widget = widget;
+            this.category = category;
+        }
+    }
+    
+    private enum ConfigEntryType {
+        TEXT_FIELD, BUTTON, TOGGLE
+    }
 
     public ModConfigScreen() {
         this(null);
@@ -32,54 +82,105 @@ public class ModConfigScreen extends Screen {
 
     @Override
     protected void init() {
-        int centerX = this.width / 2;
-        int y = this.height / 4 - 20; // чуть выше
-        int labelWidth = 120;
-        int fieldWidth = 100;
-        int fieldHeight = 18;
-        int spacing = 24;
-        TextRenderer textRenderer = this.textRenderer;
-
         initialChannelName = ModConfig.getTWITCH_CHANNEL_NAME();
-
-        // Поле для имени канала
-        channelNameField = new TextFieldWidget(textRenderer, centerX + 10, y, fieldWidth, fieldHeight, Text.translatable("takeyourminestream.config.channel_name"));
+        
+        // Создаем кнопки категорий
+        createCategoryButtons();
+        
+        // Создаем элементы конфигурации
+        createConfigEntries();
+        
+        // Создаем кнопки внизу экрана
+        createBottomButtons();
+        
+        // Обновляем видимость элементов для текущей категории
+        updateCategoryVisibility();
+    }
+    
+    private void createCategoryButtons() {
+        categoryButtons.clear();
+        int buttonWidth = 80;
+        int totalWidth = ConfigCategory.values().length * buttonWidth;
+        int startX = (this.width - totalWidth) / 2;
+        int y = HEADER_HEIGHT - CATEGORY_BUTTON_HEIGHT - 5;
+        
+        for (int i = 0; i < ConfigCategory.values().length; i++) {
+            ConfigCategory category = ConfigCategory.values()[i];
+            ButtonWidget button = ButtonWidget.builder(
+                category.getText(),
+                btn -> {
+                    currentCategory = category;
+                    updateCategoryVisibility();
+                    updateCategoryButtons();
+                }
+            ).dimensions(startX + i * buttonWidth, y, buttonWidth, CATEGORY_BUTTON_HEIGHT).build();
+            
+            categoryButtons.add(button);
+            this.addDrawableChild(button);
+        }
+        
+        updateCategoryButtons();
+    }
+    
+    private void updateCategoryButtons() {
+        for (int i = 0; i < categoryButtons.size(); i++) {
+            ButtonWidget button = categoryButtons.get(i);
+            ConfigCategory category = ConfigCategory.values()[i];
+            button.active = category != currentCategory;
+        }
+    }
+    
+    private void createConfigEntries() {
+        configEntries.clear();
+        TextRenderer textRenderer = this.textRenderer;
+        
+        // Общие настройки
+        TextFieldWidget channelNameField = new TextFieldWidget(textRenderer, 0, 0, CONTROL_WIDTH, 20, Text.translatable("takeyourminestream.config.channel_name"));
         channelNameField.setText(ModConfig.getTWITCH_CHANNEL_NAME());
         channelNameField.setChangedListener(s -> ConfigManager.getInstance().setConfigValue("twitchChannelName", s));
         this.addDrawableChild(channelNameField);
-        y += spacing;
-
-        // Поле для времени жизни сообщения
-        messageLifetimeField = new TextFieldWidget(textRenderer, centerX + 10, y, fieldWidth, fieldHeight, Text.translatable("takeyourminestream.config.message_lifetime"));
+        configEntries.add(new ConfigEntry("takeyourminestream.config.channel_name", "takeyourminestream.config.channel_name.desc", ConfigEntryType.TEXT_FIELD, channelNameField, ConfigCategory.GENERAL));
+        
+        ButtonWidget automoderationButton = ButtonWidget.builder(
+            Text.translatable(ModConfig.isENABLE_AUTOMODERATION() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"),
+            btn -> {
+                ModConfig.setENABLE_AUTOMODERATION(!ModConfig.isENABLE_AUTOMODERATION());
+                btn.setMessage(Text.translatable(ModConfig.isENABLE_AUTOMODERATION() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"));
+            }
+        ).dimensions(0, 0, CONTROL_WIDTH, 20).build();
+        this.addDrawableChild(automoderationButton);
+        configEntries.add(new ConfigEntry("takeyourminestream.config.automoderation", "takeyourminestream.config.automoderation.desc", ConfigEntryType.TOGGLE, automoderationButton, ConfigCategory.GENERAL));
+        
+        // Настройки сообщений
+        TextFieldWidget messageLifetimeField = new TextFieldWidget(textRenderer, 0, 0, CONTROL_WIDTH, 20, Text.translatable("takeyourminestream.config.message_lifetime"));
         messageLifetimeField.setText(String.valueOf(ModConfig.getMESSAGE_LIFETIME_TICKS()));
         messageLifetimeField.setChangedListener(s -> {
             try { ConfigManager.getInstance().setConfigValue("messageLifetimeTicks", Integer.parseInt(s)); } catch (NumberFormatException ignored) {}
         });
         this.addDrawableChild(messageLifetimeField);
-        y += spacing;
-
-        // Поле для времени падения
-        messageFallField = new TextFieldWidget(textRenderer, centerX + 10, y, fieldWidth, fieldHeight, Text.translatable("takeyourminestream.config.message_fall"));
+        configEntries.add(new ConfigEntry("takeyourminestream.config.message_lifetime", "takeyourminestream.config.message_lifetime.desc", ConfigEntryType.TEXT_FIELD, messageLifetimeField, ConfigCategory.MESSAGES));
+        
+        TextFieldWidget messageFallField = new TextFieldWidget(textRenderer, 0, 0, CONTROL_WIDTH, 20, Text.translatable("takeyourminestream.config.message_fall"));
         messageFallField.setText(String.valueOf(ModConfig.getMESSAGE_FALL_TICKS()));
         messageFallField.setChangedListener(s -> {
             try { ConfigManager.getInstance().setConfigValue("messageFallTicks", Integer.parseInt(s)); } catch (NumberFormatException ignored) {}
         });
         this.addDrawableChild(messageFallField);
-        y += spacing;
-
-        // Кнопка для переключения ENABLE_FREEZING_ON_VIEW
-        freezingToggleButton = ButtonWidget.builder(
-            Text.translatable(ModConfig.isENABLE_FREEZING_ON_VIEW() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"),
+        configEntries.add(new ConfigEntry("takeyourminestream.config.message_fall", "takeyourminestream.config.message_fall.desc", ConfigEntryType.TEXT_FIELD, messageFallField, ConfigCategory.MESSAGES));
+        
+        ButtonWidget messageScaleButton = ButtonWidget.builder(
+            getMessageScaleButtonText(),
             btn -> {
-                ModConfig.setENABLE_FREEZING_ON_VIEW(!ModConfig.isENABLE_FREEZING_ON_VIEW());
-                btn.setMessage(Text.translatable(ModConfig.isENABLE_FREEZING_ON_VIEW() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"));
+                var currentScale = ModConfig.getMESSAGE_SCALE();
+                var nextScale = currentScale.next();
+                ModConfig.setMESSAGE_SCALE(nextScale);
+                btn.setMessage(getMessageScaleButtonText());
             }
-        ).dimensions(centerX + 10, y, fieldWidth, fieldHeight).build();
-        this.addDrawableChild(freezingToggleButton);
-        y += spacing;
-
-        // Кнопка для переключения режима спавна сообщений
-        inFrontOnlyToggleButton = ButtonWidget.builder(
+        ).dimensions(0, 0, CONTROL_WIDTH, 20).build();
+        this.addDrawableChild(messageScaleButton);
+        configEntries.add(new ConfigEntry("takeyourminestream.config.message_scale", "takeyourminestream.config.message_scale.desc", ConfigEntryType.BUTTON, messageScaleButton, ConfigCategory.MESSAGES));
+        
+        ButtonWidget spawnModeButton = ButtonWidget.builder(
             getSpawnModeButtonText(),
             btn -> {
                 var currentMode = ModConfig.getMESSAGE_SPAWN_MODE();
@@ -87,45 +188,88 @@ public class ModConfigScreen extends Screen {
                 ModConfig.setMESSAGE_SPAWN_MODE(nextMode);
                 btn.setMessage(getSpawnModeButtonText());
             }
-        ).dimensions(centerX + 10, y, fieldWidth, fieldHeight).build();
-        this.addDrawableChild(inFrontOnlyToggleButton);
-        y += spacing;
-
-        // Поле для максимальной дистанции заморозки
-        maxFreezeDistanceField = new TextFieldWidget(textRenderer, centerX + 10, y, fieldWidth, fieldHeight, Text.translatable("takeyourminestream.config.max_freeze_distance"));
+        ).dimensions(0, 0, CONTROL_WIDTH, 20).build();
+        this.addDrawableChild(spawnModeButton);
+        configEntries.add(new ConfigEntry("takeyourminestream.config.spawn_mode_label", "takeyourminestream.config.spawn_mode.desc", ConfigEntryType.BUTTON, spawnModeButton, ConfigCategory.MESSAGES));
+        
+        // Настройки поведения
+        ButtonWidget freezingButton = ButtonWidget.builder(
+            Text.translatable(ModConfig.isENABLE_FREEZING_ON_VIEW() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"),
+            btn -> {
+                ModConfig.setENABLE_FREEZING_ON_VIEW(!ModConfig.isENABLE_FREEZING_ON_VIEW());
+                btn.setMessage(Text.translatable(ModConfig.isENABLE_FREEZING_ON_VIEW() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"));
+            }
+        ).dimensions(0, 0, CONTROL_WIDTH, 20).build();
+        this.addDrawableChild(freezingButton);
+        configEntries.add(new ConfigEntry("takeyourminestream.config.freezing_on_view", "takeyourminestream.config.freezing_on_view.desc", ConfigEntryType.TOGGLE, freezingButton, ConfigCategory.BEHAVIOR));
+        
+        TextFieldWidget maxFreezeDistanceField = new TextFieldWidget(textRenderer, 0, 0, CONTROL_WIDTH, 20, Text.translatable("takeyourminestream.config.max_freeze_distance"));
         maxFreezeDistanceField.setText(String.valueOf(ModConfig.getMAX_FREEZE_DISTANCE()));
         maxFreezeDistanceField.setChangedListener(s -> {
             try { ConfigManager.getInstance().setConfigValue("maxFreezeDistance", Double.parseDouble(s)); } catch (NumberFormatException ignored) {}
         });
         this.addDrawableChild(maxFreezeDistanceField);
-        y += spacing + 6;
-
-        // Кнопка для переключения ENABLE_AUTOMODERATION
-        automoderationToggleButton = ButtonWidget.builder(
-            Text.translatable(ModConfig.isENABLE_AUTOMODERATION() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"),
-            btn -> {
-                ModConfig.setENABLE_AUTOMODERATION(!ModConfig.isENABLE_AUTOMODERATION());
-                btn.setMessage(Text.translatable(ModConfig.isENABLE_AUTOMODERATION() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"));
+        configEntries.add(new ConfigEntry("takeyourminestream.config.max_freeze_distance", "takeyourminestream.config.max_freeze_distance.desc", ConfigEntryType.TEXT_FIELD, maxFreezeDistanceField, ConfigCategory.BEHAVIOR));
+    }
+    
+    private void updateCategoryVisibility() {
+        for (ConfigEntry entry : configEntries) {
+            if (entry.widget instanceof ButtonWidget) {
+                ((ButtonWidget) entry.widget).visible = entry.category == currentCategory;
+            } else if (entry.widget instanceof TextFieldWidget) {
+                ((TextFieldWidget) entry.widget).visible = entry.category == currentCategory;
             }
-        ).dimensions(centerX + 10, y, fieldWidth, fieldHeight).build();
-        this.addDrawableChild(automoderationToggleButton);
-        y += spacing;
+        }
+        updateEntryPositions();
+    }
+    
+    private void updateEntryPositions() {
+        int contentTop = HEADER_HEIGHT + 10;
+        int y = contentTop - scrollOffset;
+        int leftX = SIDE_MARGIN;
+        int rightX = this.width - SIDE_MARGIN - CONTROL_WIDTH;
+        
+        for (ConfigEntry entry : configEntries) {
+            if (entry.category != currentCategory) continue;
+            
+            if (entry.widget instanceof ButtonWidget) {
+                ((ButtonWidget) entry.widget).setPosition(rightX, y);
+            } else if (entry.widget instanceof TextFieldWidget) {
+                ((TextFieldWidget) entry.widget).setPosition(rightX, y);
+            }
+            
+            y += ENTRY_HEIGHT + ENTRY_SPACING;
+        }
+    }
+    
 
-        // Кнопка "Сохранить и выйти"
-        int saveButtonWidth = 160;
-        this.addDrawableChild(ButtonWidget.builder(Text.translatable("takeyourminestream.config.save_and_exit"), btn -> {
+    
+    private void createBottomButtons() {
+        int centerX = this.width / 2;
+        int buttonY = this.height - FOOTER_HEIGHT;
+        int buttonWidth = 100;
+        int buttonSpacing = 10;
+        
+        // Кнопка "История сообщений"
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("takeyourminestream.config.message_history"), btn -> {
+            var messageSpawner = TakeYourMineStreamClient.getStaticMessageSpawner();
+            if (messageSpawner != null) {
+                var lifecycleManager = messageSpawner.getLifecycleManager();
+                this.client.setScreen(new MessageHistoryScreen(this, lifecycleManager));
+            }
+        }).dimensions(centerX - buttonWidth - buttonSpacing / 2, buttonY, buttonWidth, 20).build());
+
+        // Кнопка "Готово"
+        this.addDrawableChild(ButtonWidget.builder(Text.translatable("gui.done"), btn -> {
             if (!ModConfig.getTWITCH_CHANNEL_NAME().equals(initialChannelName)) {
                 TwitchManager.getInstance(ConfigManager.getInstance()).onChannelNameChanged(ModConfig.getTWITCH_CHANNEL_NAME());
             }
             ConfigManager.getInstance().saveConfig();
             this.close();
-        }).dimensions(centerX - saveButtonWidth / 2, y, saveButtonWidth, fieldHeight).build());
+        }).dimensions(centerX + buttonSpacing / 2, buttonY, buttonWidth, 20).build());
     }
 
-    private String getFreezingButtonText() {
-        return "Заморозка при взгляде: " + (ModConfig.isENABLE_FREEZING_ON_VIEW() ? "ВКЛ" : "ВЫКЛ");
-    }
-    
+
     private Text getSpawnModeButtonText() {
         var mode = ModConfig.getMESSAGE_SPAWN_MODE();
         switch (mode) {
@@ -139,51 +283,164 @@ public class ModConfigScreen extends Screen {
                 return Text.translatable("takeyourminestream.config.around_player");
         }
     }
+    
+    private Text getMessageScaleButtonText() {
+        var scale = ModConfig.getMESSAGE_SCALE();
+        switch (scale) {
+            case TINY:
+                return Text.translatable("takeyourminestream.config.scale_tiny");
+            case SMALL:
+                return Text.translatable("takeyourminestream.config.scale_small");
+            case NORMAL:
+                return Text.translatable("takeyourminestream.config.scale_normal");
+            case LARGE:
+                return Text.translatable("takeyourminestream.config.scale_large");
+            case HUGE:
+                return Text.translatable("takeyourminestream.config.scale_huge");
+            default:
+                return Text.translatable("takeyourminestream.config.scale_normal");
+        }
+    }
 
     @Override
     public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        // Обновляем позиции элементов при каждом рендере
+        updateEntryPositions();
+        
         super.render(context, mouseX, mouseY, delta);
-        int centerX = this.width / 2;
-        int y = this.height / 4 - 48;
-        context.drawCenteredTextWithShadow(this.textRenderer, this.title, centerX, y, 0xFFFFFF);
-
-        // Лейблы слева от каждого поля, длинные разбиты на две строки
+        
+        // Заголовок
+        context.drawCenteredTextWithShadow(this.textRenderer, this.title, this.width / 2, 10, 0xFFFFFF);
+        
+        // Область для отображения настроек - от верха экрана до кнопок внизу
+        int contentTop = HEADER_HEIGHT;
+        int contentBottom = this.height - FOOTER_HEIGHT - 10;
+        
+        // Рендерим фон области настроек (используем padding как в MessageHistoryScreen)
+        int padding = 10;
+        context.fill(padding, contentTop, this.width - padding, contentBottom, 0x40000000);
+        
+        // Рендерим лейблы с учетом прокрутки (СТАРЫЙ РАБОЧИЙ ПОДХОД)
+        renderLabels(context, contentTop, contentBottom);
+        
+        // Индикатор прокрутки
+        renderScrollbar(context, contentTop, contentBottom);
+    }
+    
+    private void renderLabels(DrawContext context, int contentTop, int contentBottom) {
         int labelColor = 0xFFFFFFFF;
         int fontHeight = this.textRenderer.fontHeight;
-        int fieldHeight = 18;
-        int labelOffsetX = 10;
-        int labelWidth = 120;
-        int x1 = channelNameField.getX() - labelWidth - labelOffsetX;
-        int x2 = messageLifetimeField.getX() - labelWidth - labelOffsetX;
-        int x3 = messageFallField.getX() - labelWidth - labelOffsetX;
-        int x4 = freezingToggleButton.getX() - labelWidth - labelOffsetX;
-        int x5 = maxFreezeDistanceField.getX() - labelWidth - labelOffsetX;
-        int x6 = inFrontOnlyToggleButton.getX() - labelWidth - labelOffsetX;
-        int x7 = automoderationToggleButton.getX() - labelWidth - labelOffsetX;
-        int y1 = channelNameField.getY() + (fieldHeight - fontHeight) / 2;
-        int y2 = messageLifetimeField.getY() + (fieldHeight - fontHeight) / 2;
-        int y3 = messageFallField.getY() + (fieldHeight - fontHeight) / 2;
-        int y4 = freezingToggleButton.getY() + (fieldHeight - fontHeight) / 2;
-        int y5 = maxFreezeDistanceField.getY() + (fieldHeight - fontHeight) / 2;
-        int y6 = inFrontOnlyToggleButton.getY() + (fieldHeight - fontHeight) / 2;
-        int y7 = automoderationToggleButton.getY() + (fieldHeight - fontHeight) / 2;
-        // Имя Twitch-канала
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.channel_name"), x1, y1, labelColor, true);
-        // Время жизни сообщения (тики):
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.message_lifetime"), x2, y2 - fontHeight / 2, labelColor, true);
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.message_lifetime_ticks"), x2, y2 + fontHeight / 2, labelColor, true);
-        // Время падения (тики):
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.message_fall"), x3, y3 - fontHeight / 2, labelColor, true);
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.message_fall_ticks"), x3, y3 + fontHeight / 2, labelColor, true);
-        // Заморозка при взгляде
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.freezing_on_view"), x4, y4 - fontHeight / 2, labelColor, true);
-        // Макс. дистанция заморозки (блоки):
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.max_freeze_distance"), x5, y5 - fontHeight / 2, labelColor, true);
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.max_freeze_distance_blocks"), x5, y5 + fontHeight / 2, labelColor, true);
-        // Спавнить только спереди
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.spawn_mode_label"), x6, y6, labelColor, true);
-        // Автомодерация
-        context.drawText(this.textRenderer, Text.translatable("takeyourminestream.config.automoderation"), x7, y7, labelColor, true);
+        
+        // Лейблы идут от левой границы области контента (используем padding)
+        int padding = 10;
+        int labelX = padding + 10;
+        
+        // Вычисляем позиции элементов с учетом скролла
+        int baseY = contentTop + 10 - scrollOffset;
+        int currentY = baseY;
+        
+        // Рендерим лейблы для текущей категории
+        for (ConfigEntry entry : configEntries) {
+            if (entry.category != currentCategory) continue;
+            
+            if (isElementVisible(currentY, contentTop, contentBottom)) {
+                // Лейбл выравнивается по левому краю
+                context.drawText(this.textRenderer, Text.translatable(entry.labelKey), 
+                    labelX, currentY + (20 - fontHeight) / 2, labelColor, true);
+            }
+            currentY += ENTRY_HEIGHT + ENTRY_SPACING;
+        }
+    }
+    
+    private int getMaxLabelWidth() {
+        int maxWidth = 0;
+        
+        // Проверяем все лейблы и находим максимальную ширину
+        for (ConfigEntry entry : configEntries) {
+            if (entry.category == currentCategory) {
+                String labelText = Text.translatable(entry.labelKey).getString();
+                int width = this.textRenderer.getWidth(labelText);
+                maxWidth = Math.max(maxWidth, width);
+            }
+        }
+        
+        return maxWidth;
+    }
+    
+    private boolean isElementVisible(int elementY, int contentTop, int contentBottom) {
+        return elementY + 20 > contentTop && elementY < contentBottom;
+    }
+    
+    private List<String> wrapText(String text, int maxWidth) {
+        List<String> lines = new ArrayList<>();
+        if (this.textRenderer.getWidth(text) <= maxWidth) {
+            lines.add(text);
+            return lines;
+        }
+        
+        String[] words = text.split(" ");
+        StringBuilder currentLine = new StringBuilder();
+        
+        for (String word : words) {
+            String testLine = currentLine.length() == 0 ? word : currentLine + " " + word;
+            if (this.textRenderer.getWidth(testLine) <= maxWidth) {
+                currentLine = new StringBuilder(testLine);
+            } else {
+                if (currentLine.length() > 0) {
+                    lines.add(currentLine.toString());
+                    currentLine = new StringBuilder(word);
+                } else {
+                    lines.add(word);
+                }
+            }
+        }
+        
+        if (currentLine.length() > 0) {
+            lines.add(currentLine.toString());
+        }
+        
+        return lines;
+    }
+    
+    private int getTotalContentHeight() {
+        int count = 0;
+        for (ConfigEntry entry : configEntries) {
+            if (entry.category == currentCategory) {
+                count++;
+            }
+        }
+        return count * (ENTRY_HEIGHT + ENTRY_SPACING) + 20;
+    }
+    
+    private void renderScrollbar(DrawContext context, int contentTop, int contentBottom) {
+        int totalContentHeight = getTotalContentHeight();
+        int visibleContentHeight = contentBottom - contentTop;
+        
+        if (totalContentHeight <= visibleContentHeight) return;
+        
+        int padding = 10;
+        int scrollbarX = this.width - padding - 6;
+        int scrollbarWidth = 4;
+        int scrollbarHeight = contentBottom - contentTop;
+        
+        // Фон скроллбара
+        context.fill(scrollbarX, contentTop, scrollbarX + scrollbarWidth, contentBottom, 0x40FFFFFF);
+        
+        // Ползунок скроллбара
+        int thumbHeight = Math.max(10, (visibleContentHeight * scrollbarHeight) / totalContentHeight);
+        int maxScroll = totalContentHeight - visibleContentHeight;
+        int thumbY = contentTop + (scrollOffset * (scrollbarHeight - thumbHeight)) / maxScroll;
+        
+        context.fill(scrollbarX, thumbY, scrollbarX + scrollbarWidth, thumbY + thumbHeight, 0x80FFFFFF);
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+        int totalContentHeight = getTotalContentHeight();
+        int visibleContentHeight = this.height - HEADER_HEIGHT - FOOTER_HEIGHT - 20;
+        int maxScroll = Math.max(0, totalContentHeight - visibleContentHeight);
+        scrollOffset = Math.max(0, Math.min(maxScroll, scrollOffset - (int)(verticalAmount * 20)));
+        return true;
     }
 
     @Override

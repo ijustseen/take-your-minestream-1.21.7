@@ -23,7 +23,7 @@ public class MessageHudRenderer {
     private static final int MESSAGE_SPACING = 2;
     private static final int BACKGROUND_COLOR = 0x80000000; // Полупрозрачный черный
     private static final int TEXT_COLOR = 0xFFFFFFFF; // Белый текст
-    private static final int MAX_MESSAGE_WIDTH = 300;
+    private static final int BASE_MAX_MESSAGE_WIDTH = 300;
     
     public MessageHudRenderer(MessageLifecycleManager lifecycleManager) {
         this.lifecycleManager = lifecycleManager;
@@ -57,8 +57,12 @@ public class MessageHudRenderer {
             float alpha = calculateMessageAlpha(message);
             if (alpha <= 0.0f) continue;
             
+            // Применяем масштаб к максимальной ширине
+            float scale = takeyourminestream.modid.ModConfig.getMESSAGE_SCALE().getScale();
+            int maxMessageWidth = (int)(BASE_MAX_MESSAGE_WIDTH * scale);
+            
             // Разбиваем текст на строки
-            List<OrderedText> wrappedText = textRenderer.wrapLines(Text.of(message.getText()), MAX_MESSAGE_WIDTH - MESSAGE_PADDING * 2);
+            List<OrderedText> wrappedText = textRenderer.wrapLines(Text.of(message.getText()), maxMessageWidth - MESSAGE_PADDING * 2);
             
             // Вычисляем размеры панели
             int maxLineWidth = 0;
@@ -69,8 +73,12 @@ public class MessageHudRenderer {
                 }
             }
             
-            int panelWidth = maxLineWidth + MESSAGE_PADDING * 2;
-            int panelHeight = wrappedText.size() * textRenderer.fontHeight + MESSAGE_PADDING * 2;
+            // Применяем масштаб к размерам панели
+            int scaledPadding = (int)(MESSAGE_PADDING * scale);
+            int scaledFontHeight = (int)(textRenderer.fontHeight * scale);
+            
+            int panelWidth = (int)(maxLineWidth * scale) + scaledPadding * 2;
+            int panelHeight = wrappedText.size() * scaledFontHeight + scaledPadding * 2;
             
             // Позиция панели (справа)
             int panelX = screenWidth - panelWidth - MESSAGE_MARGIN;
@@ -80,17 +88,17 @@ public class MessageHudRenderer {
             int backgroundColor = applyAlpha(BACKGROUND_COLOR, alpha);
             drawContext.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, backgroundColor);
             
-            // Рендерим текст
+            // Рендерим текст (масштаб уже применен к размерам панели)
             int textColor = applyAlpha(TEXT_COLOR, alpha);
-            int textY = panelY + MESSAGE_PADDING;
+            int textY = panelY + scaledPadding;
             
             for (OrderedText line : wrappedText) {
-                int textX = panelX + MESSAGE_PADDING;
+                int textX = panelX + scaledPadding;
                 drawContext.drawText(textRenderer, line, textX, textY, textColor, true);
-                textY += textRenderer.fontHeight;
+                textY += scaledFontHeight;
             }
             
-            currentY += panelHeight + MESSAGE_SPACING;
+            currentY += panelHeight + (int)(MESSAGE_SPACING * scale);
         }
     }
     

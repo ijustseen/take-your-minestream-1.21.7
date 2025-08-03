@@ -14,6 +14,8 @@ import java.util.Set;
  */
 public class MessageLifecycleManager {
     private final List<Message> activeMessages = new ArrayList<>();
+    private final List<Message> messageHistory = new ArrayList<>();
+    private static final int MAX_HISTORY_SIZE = 100; // Максимальное количество сообщений в истории
     private int tickCounter = 0;
     private final MessageParticleManager particleManager;
     private final Set<Message> spawnedParticlesForMessages = new HashSet<>();
@@ -100,6 +102,14 @@ public class MessageLifecycleManager {
      */
     public void addMessage(Message message) {
         activeMessages.add(message);
+        
+        // Добавляем в историю
+        messageHistory.add(message);
+        
+        // Ограничиваем размер истории
+        while (messageHistory.size() > MAX_HISTORY_SIZE) {
+            messageHistory.remove(0);
+        }
     }
     
     /**
@@ -124,5 +134,28 @@ public class MessageLifecycleManager {
      */
     public int getTickCounter() {
         return tickCounter;
+    }
+    
+    /**
+     * Возвращает все сообщения из истории
+     * @return список всех сообщений в истории
+     */
+    public List<Message> getAllMessages() {
+        return new ArrayList<>(messageHistory);
+    }
+    
+    /**
+     * Возвращает размер истории сообщений
+     * @return количество сообщений в истории
+     */
+    public int getMessageHistorySize() {
+        return messageHistory.size();
+    }
+    
+    /**
+     * Очищает историю сообщений
+     */
+    public void clearMessageHistory() {
+        messageHistory.clear();
     }
 } 

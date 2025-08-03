@@ -80,4 +80,12 @@ public class ModConfig {
     public static void setMESSAGE_SPAWN_MODE(takeyourminestream.modid.config.MessageSpawnMode value) {
         ConfigManager.getInstance().setConfigValue("messageSpawnMode", value);
     }
+    
+    public static takeyourminestream.modid.config.MessageScale getMESSAGE_SCALE() {
+        return (takeyourminestream.modid.config.MessageScale) ConfigManager.getInstance().getConfigValue("messageScale");
+    }
+    
+    public static void setMESSAGE_SCALE(takeyourminestream.modid.config.MessageScale value) {
+        ConfigManager.getInstance().setConfigValue("messageScale", value);
+    }
 } 
