@@ -47,5 +47,7 @@
   "takeyourminestream.twitch.reconnected": "Reconnected to Twitch channel: %s",
   "takeyourminestream.twitch.error.connect": "Error connecting to Twitch: %s",
   "takeyourminestream.twitch.error.disconnect": "Error disconnecting from Twitch: %s",
-  "takeyourminestream.twitch.error.reconnect": "Error reconnecting to Twitch: %s"
+  "takeyourminestream.twitch.error.reconnect": "Error reconnecting to Twitch: %s",
+  "key.takeyourminestream.openconfig": "Open MineStream Settings",
+  "category.takeyourminestream.general": "Take Your MineStream"
 }

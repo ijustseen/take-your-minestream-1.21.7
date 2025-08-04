@@ -47,5 +47,7 @@
   "takeyourminestream.twitch.reconnected": "Переподключено к Twitch-каналу: %s",
   "takeyourminestream.twitch.error.connect": "Ошибка при подключении к Twitch: %s",
   "takeyourminestream.twitch.error.disconnect": "Ошибка при отключении от Twitch: %s",
-  "takeyourminestream.twitch.error.reconnect": "Ошибка при переподключении к Twitch: %s"
+  "takeyourminestream.twitch.error.reconnect": "Ошибка при переподключении к Twitch: %s",
+  "key.takeyourminestream.openconfig": "Открыть настройки MineStream",
+  "category.takeyourminestream.general": "Take Your MineStream"
 }

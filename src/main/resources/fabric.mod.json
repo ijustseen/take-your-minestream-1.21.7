@@ -1,41 +1,35 @@
 {
-	"schemaVersion": 1,
-	"id": "take-your-minestream",
-	"version": "${version}",
-	"name": "Take Your MineStream",
-	"description": "This is an example description! Tell everyone what your mod is about!",
-	"authors": [
-		"Me!"
-	],
-	"contact": {
-		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
-	},
-	"license": "CC0-1.0",
-	"icon": "assets/take-your-minestream/icon.png",
-	"environment": "*",
-	"entrypoints": {
-		"main": [
-			"takeyourminestream.modid.TakeYourMineStream"
-		],
-		"client": [
-			"takeyourminestream.modid.TakeYourMineStreamClient"
-		]
-	},
-	"mixins": [
-		"take-your-minestream.mixins.json",
-		{
-			"config": "take-your-minestream.client.mixins.json",
-			"environment": "client"
-		}
-	],
-	"depends": {
-		"fabricloader": ">=0.16.14",
-		"minecraft": "~1.21.7",
-		"java": ">=21",
-		"fabric-api": "*"
-	},
-	"suggests": {
-		"another-mod": "*"
-	}
+  "schemaVersion": 1,
+  "id": "take-your-minestream",
+  "version": "${version}",
+  "name": "Take Your MineStream",
+  "description": "Advanced Twitch chat integration for Minecraft with 3D floating messages, HUD display, smart moderation, and customizable visual effects.",
+  "authors": ["ijustseen"],
+  "contact": {
+    "homepage": "https://github.com/ijustseen/take-your-minestream-template-1.21.7",
+    "sources": "https://github.com/ijustseen/take-your-minestream-template-1.21.7"
+  },
+  "license": "CC0-1.0",
+  "icon": "assets/take-your-minestream/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["takeyourminestream.modid.TakeYourMineStream"],
+    "client": ["takeyourminestream.modid.TakeYourMineStreamClient"]
+  },
+  "mixins": [
+    "take-your-minestream.mixins.json",
+    {
+      "config": "take-your-minestream.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.14",
+    "minecraft": "~1.21.7",
+    "java": ">=21",
+    "fabric-api": "*"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
 }
