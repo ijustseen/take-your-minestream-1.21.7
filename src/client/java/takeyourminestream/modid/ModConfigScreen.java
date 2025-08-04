@@ -12,6 +12,7 @@ import net.minecraft.client.font.TextRenderer;
 import org.jetbrains.annotations.Nullable;
 import takeyourminestream.modid.config.MessageSpawnMode;
 import takeyourminestream.modid.config.MessageScale;
+import takeyourminestream.modid.widget.MessageScaleSliderWidget;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,7 +71,7 @@ public class ModConfigScreen extends Screen {
     }
     
     private enum ConfigEntryType {
-        TEXT_FIELD, BUTTON, TOGGLE
+        TEXT_FIELD, BUTTON, TOGGLE, SLIDER
     }
 
     public ModConfigScreen() {
@@ -170,17 +171,9 @@ public class ModConfigScreen extends Screen {
         this.addDrawableChild(messageFallField);
         configEntries.add(new ConfigEntry("takeyourminestream.config.message_fall", "takeyourminestream.config.message_fall.desc", ConfigEntryType.TEXT_FIELD, messageFallField, ConfigCategory.MESSAGES));
         
-        ButtonWidget messageScaleButton = ButtonWidget.builder(
-            getMessageScaleButtonText(),
-            btn -> {
-                var currentScale = ModConfig.getMESSAGE_SCALE();
-                var nextScale = currentScale.next();
-                ModConfig.setMESSAGE_SCALE(nextScale);
-                btn.setMessage(getMessageScaleButtonText());
-            }
-        ).dimensions(0, 0, CONTROL_WIDTH, 20).build();
-        this.addDrawableChild(messageScaleButton);
-        configEntries.add(new ConfigEntry("takeyourminestream.config.message_scale", "takeyourminestream.config.message_scale.desc", ConfigEntryType.BUTTON, messageScaleButton, ConfigCategory.MESSAGES));
+        MessageScaleSliderWidget messageScaleSlider = new MessageScaleSliderWidget(0, 0, CONTROL_WIDTH, 20);
+        this.addDrawableChild(messageScaleSlider);
+        configEntries.add(new ConfigEntry("takeyourminestream.config.message_scale", "takeyourminestream.config.message_scale.desc", ConfigEntryType.SLIDER, messageScaleSlider, ConfigCategory.MESSAGES));
         
         ButtonWidget spawnModeButton = ButtonWidget.builder(
             getSpawnModeButtonText(),
@@ -220,6 +213,8 @@ public class ModConfigScreen extends Screen {
                 ((ButtonWidget) entry.widget).visible = entry.category == currentCategory;
             } else if (entry.widget instanceof TextFieldWidget) {
                 ((TextFieldWidget) entry.widget).visible = entry.category == currentCategory;
+            } else if (entry.widget instanceof MessageScaleSliderWidget) {
+                ((MessageScaleSliderWidget) entry.widget).visible = entry.category == currentCategory;
             }
         }
         updateEntryPositions();
@@ -238,6 +233,8 @@ public class ModConfigScreen extends Screen {
                 ((ButtonWidget) entry.widget).setPosition(rightX, y);
             } else if (entry.widget instanceof TextFieldWidget) {
                 ((TextFieldWidget) entry.widget).setPosition(rightX, y);
+            } else if (entry.widget instanceof MessageScaleSliderWidget) {
+                ((MessageScaleSliderWidget) entry.widget).setPosition(rightX, y);
             }
             
             y += ENTRY_HEIGHT + ENTRY_SPACING;
@@ -292,23 +289,7 @@ public class ModConfigScreen extends Screen {
         }
     }
     
-    private Text getMessageScaleButtonText() {
-        var scale = ModConfig.getMESSAGE_SCALE();
-        switch (scale) {
-            case TINY:
-                return Text.translatable("takeyourminestream.config.scale_tiny");
-            case SMALL:
-                return Text.translatable("takeyourminestream.config.scale_small");
-            case NORMAL:
-                return Text.translatable("takeyourminestream.config.scale_normal");
-            case LARGE:
-                return Text.translatable("takeyourminestream.config.scale_large");
-            case HUGE:
-                return Text.translatable("takeyourminestream.config.scale_huge");
-            default:
-                return Text.translatable("takeyourminestream.config.scale_normal");
-        }
-    }
+
     
     private Text getTwitchToggleButtonText() {
         var twitchManager = TwitchManager.getInstance(ConfigManager.getInstance());
