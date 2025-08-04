@@ -38,5 +38,14 @@
   "takeyourminestream.config.max_freeze_distance.desc": "Maximum distance for message freezing (in blocks)",
   "takeyourminestream.history.title": "Message History",
   "takeyourminestream.history.close": "Close",
-  "takeyourminestream.history.clear": "Clear History"
+  "takeyourminestream.history.clear": "Clear History",
+  "takeyourminestream.twitch.connecting": "Connecting to Twitch chat '%s'...",
+  "takeyourminestream.twitch.connected": "Successfully connected to Twitch chat!",
+  "takeyourminestream.twitch.already_connected": "Already connected to Twitch chat.",
+  "takeyourminestream.twitch.disconnected": "Disconnected from Twitch chat.",
+  "takeyourminestream.twitch.not_connected": "Not connected to Twitch chat.",
+  "takeyourminestream.twitch.reconnected": "Reconnected to Twitch channel: %s",
+  "takeyourminestream.twitch.error.connect": "Error connecting to Twitch: %s",
+  "takeyourminestream.twitch.error.disconnect": "Error disconnecting from Twitch: %s",
+  "takeyourminestream.twitch.error.reconnect": "Error reconnecting to Twitch: %s"
 }

@@ -7,27 +7,27 @@ public enum MessageScale {
     /**
      * Очень маленькие сообщения
      */
-    TINY("tiny", 0.6f),
+    TINY("tiny", 0.4f),
     
     /**
      * Маленькие сообщения
      */
-    SMALL("small", 0.8f),
+    SMALL("small", 0.6f),
     
     /**
      * Обычные сообщения
      */
-    NORMAL("normal", 1.0f),
+    NORMAL("normal", 0.8f),
     
     /**
      * Большие сообщения
      */
-    LARGE("large", 1.3f),
+    LARGE("large", 1.0f),
     
     /**
      * Огромные сообщения
      */
-    HUGE("huge", 1.6f);
+    HUGE("huge", 1.3f);
     
     private final String key;
     private final float scale;

@@ -38,5 +38,14 @@
   "takeyourminestream.config.max_freeze_distance.desc": "Максимальная дистанция заморозки сообщений (в блоках)",
   "takeyourminestream.history.title": "История сообщений",
   "takeyourminestream.history.close": "Закрыть",
-  "takeyourminestream.history.clear": "Очистить историю"
+  "takeyourminestream.history.clear": "Очистить историю",
+  "takeyourminestream.twitch.connecting": "Подключение к Twitch-чату '%s'...",
+  "takeyourminestream.twitch.connected": "Успешно подключено к Twitch-чату!",
+  "takeyourminestream.twitch.already_connected": "Уже подключен к Twitch-чату.",
+  "takeyourminestream.twitch.disconnected": "Отключено от Twitch-чата.",
+  "takeyourminestream.twitch.not_connected": "Не подключен к Twitch-чату.",
+  "takeyourminestream.twitch.reconnected": "Переподключено к Twitch-каналу: %s",
+  "takeyourminestream.twitch.error.connect": "Ошибка при подключении к Twitch: %s",
+  "takeyourminestream.twitch.error.disconnect": "Ошибка при отключении от Twitch: %s",
+  "takeyourminestream.twitch.error.reconnect": "Ошибка при переподключении к Twitch: %s"
 }
