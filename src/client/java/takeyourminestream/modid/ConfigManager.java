@@ -101,6 +101,9 @@ public class ConfigManager implements IConfigManager {
             case "enableAutomoderation":
                 configData.setEnableAutomoderation((Boolean) value);
                 break;
+            case "messageScale":
+                configData.setMessageScale((takeyourminestream.modid.config.MessageScale) value);
+                break;
             default:
                 LOGGER.warning("Неизвестный ключ конфигурации: " + key);
                 return;
@@ -123,6 +126,7 @@ public class ConfigManager implements IConfigManager {
         configCache.put("particleMaxCount", configData.getParticleMaxCount());
         configCache.put("particleLifetimeTicks", configData.getParticleLifetimeTicks());
         configCache.put("nickColors", configData.getNickColors());
+        configCache.put("messageScale", configData.getMessageScale());
     }
 
     public ModConfigData getConfigData() {

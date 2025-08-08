@@ -24,6 +24,7 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        instance = this;
         try {
             initializeMod();
             Logger.info("Take Your MineStream успешно инициализирован");
@@ -70,5 +71,12 @@ public class TakeYourMineStreamClient implements ClientModInitializer {
 
     public MessageSpawner getMessageSpawner() {
         return messageSpawner;
+    }
+    
+    /**
+     * Статический метод для получения MessageSpawner
+     */
+    public static MessageSpawner getStaticMessageSpawner() {
+        return instance != null ? instance.messageSpawner : null;
     }
 }

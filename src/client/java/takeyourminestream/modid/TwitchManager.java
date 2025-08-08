@@ -36,18 +36,18 @@ public class TwitchManager implements ITwitchManager {
         
         if (twitchChatClient == null) {
             try {
-                sendPlayerMessage("§aПодключение к Twitch-чату '" + channelName + "'...");
+                sendPlayerMessage("§a" + Text.translatable("takeyourminestream.twitch.connecting", channelName).getString());
                 twitchChatClient = new TwitchChatClient(channelName, messageSpawner);
                 twitchConnected = true;
                 lastTwitchChannelName = channelName;
-                sendPlayerMessage("§aУспешно подключено к Twitch-чату!");
+                sendPlayerMessage("§a" + Text.translatable("takeyourminestream.twitch.connected").getString());
                 LOGGER.info("Подключено к Twitch-каналу: " + channelName);
             } catch (Exception e) {
                 LOGGER.severe("Ошибка при подключении к Twitch: " + e.getMessage());
-                sendPlayerMessage("§cОшибка при подключении к Twitch: " + e.getMessage());
+                sendPlayerMessage("§c" + Text.translatable("takeyourminestream.twitch.error.connect", e.getMessage()).getString());
             }
         } else {
-            sendPlayerMessage("§eУже подключен к Twitch-чату.");
+            sendPlayerMessage("§e" + Text.translatable("takeyourminestream.twitch.already_connected").getString());
         }
     }
 
@@ -58,14 +58,14 @@ public class TwitchManager implements ITwitchManager {
                 twitchChatClient.disconnect();
                 twitchChatClient = null;
                 twitchConnected = false;
-                sendPlayerMessage("§aОтключено от Twitch-чата.");
+                sendPlayerMessage("§a" + Text.translatable("takeyourminestream.twitch.disconnected").getString());
                 LOGGER.info("Отключено от Twitch-канала");
             } catch (Exception e) {
                 LOGGER.severe("Ошибка при отключении от Twitch: " + e.getMessage());
-                sendPlayerMessage("§cОшибка при отключении от Twitch: " + e.getMessage());
+                sendPlayerMessage("§c" + Text.translatable("takeyourminestream.twitch.error.disconnect", e.getMessage()).getString());
             }
         } else {
-            sendPlayerMessage("§eНе подключен к Twitch-чату.");
+            sendPlayerMessage("§e" + Text.translatable("takeyourminestream.twitch.not_connected").getString());
         }
     }
 
@@ -79,11 +79,11 @@ public class TwitchManager implements ITwitchManager {
                 }
                 twitchChatClient = new TwitchChatClient(newChannelName, messageSpawner);
                 lastTwitchChannelName = newChannelName;
-                sendPlayerMessage("§aПереподключено к Twitch-каналу: " + newChannelName);
+                sendPlayerMessage("§a" + Text.translatable("takeyourminestream.twitch.reconnected", newChannelName).getString());
                 LOGGER.info("Переподключено к Twitch-каналу: " + newChannelName);
             } catch (Exception e) {
                 LOGGER.severe("Ошибка при переподключении к Twitch: " + e.getMessage());
-                sendPlayerMessage("§cОшибка при переподключении к Twitch: " + e.getMessage());
+                sendPlayerMessage("§c" + Text.translatable("takeyourminestream.twitch.error.reconnect", e.getMessage()).getString());
             }
         }
         lastTwitchChannelName = newChannelName;

@@ -1,153 +1,147 @@
-# Take Your MineStream Mod
+# Take Your MineStream
 
-A Minecraft mod that displays custom messages directly in the game world. It allows players to set arbitrary text messages and automatically receives and displays messages from Twitch chat.
+**Продвинутая интеграция Twitch чата для Minecraft 1.21.7** - мод, который превращает сообщения из чата в интерактивные элементы игрового мира с умной модерацией и потрясающими визуальными эффектами.
 
-## Features
+## 🚀 Основные возможности
 
-### Message Display System
+### 🎯 Режимы отображения
 
-- **3D Text Rendering**: Messages are rendered as 3D text in the game world with customizable positioning
-- **Dynamic Sizing**: Message size is calculated based on text content and automatically wrapped
-- **Background Panel**: Messages have a beautiful 9-slice background panel for better visibility
-- **Lifecycle Management**: Messages have configurable lifetime, fall animation, and freezing mechanics
-- **View-Based Freezing**: Messages can be frozen (prevented from disappearing) when the player looks at them
+- **3D сообщения в мире**: Плавающие текстовые пузыри вокруг игрока или перед ним
+- **HUD виджет**: Чистый оверлей чата в правом верхнем углу экрана
+- **Умное позиционирование**: Интеллектуальное размещение сообщений с избеганием коллизий
 
-### Twitch Integration
+### 🛡️ Система автомодерации
 
-- **Real-time Chat**: Automatically connects to Twitch IRC and displays messages in-game
-- **Direct IRC Connection**: Uses native Java sockets for reliable Twitch chat connection
-- **Configurable Channel**: Set your Twitch channel name in the configuration
-- **Message Queue**: Prevents message spam with intelligent queuing system
-- **Connection Management**: Start/stop Twitch connection with in-game commands
+- **Автоматическая фильтрация**: Встроенный фильтр нецензурной лексики с настраиваемыми списками слов
+- **Умная цензура**: Заменяет неподходящий контент, сохраняя читаемость сообщений
+- **Инструменты модерации**: Добавление/удаление банвордов через игровые команды
 
-### Configuration
+### 🎨 Визуальные эффекты
 
-- **In-Game Settings**: Access configuration screen with key binding (default: `]`)
-- **Twitch Toggle**: Toggle Twitch connection with key binding (default: `[`)
-- **Customizable Parameters**:
-  - Message lifetime and fall duration
-  - Maximum freeze distance
-  - Spawn mode (around player or in front only)
-  - Freezing on view toggle
+- **5 масштабов сообщений**: От крошечных до огромных - идеально для любого размера экрана
+- **Динамические частицы**: Сообщения разлетаются красивыми частицами при исчезновении
+- **Плавные анимации**: Реалистичная физика с квадратичными кривыми падения
+- **Кастомные фоны**: Профессиональные текстуры панелей с 9-slice технологией
 
-## Commands
+### 🧠 Интеллектуальное определение взгляда
 
-The mod provides the `/minestream` command with the following subcommands:
+- **Ray-Plane пересечение**: Продвинутый алгоритм точного определения взгляда на сообщения
+- **Заморозка сообщений**: Сообщения приостанавливают свой жизненный цикл при взгляде на них
+- **Динамические размеры**: Точное определение попадания независимо от длины или масштаба сообщения
 
-- `/minestream test <message>`: Sets a test message that will be displayed in the game
-- `/minestream stop`: Clears the current message and disconnects from Twitch chat
-- `/minestream twitch start`: Connects to Twitch chat for the configured channel
-- `/minestream twitch stop`: Disconnects from Twitch chat
+## 🎮 Команды и управление
 
-## Key Bindings
+### Команды
 
-- **`]` (Right Bracket)**: Open configuration screen
-- **`[` (Left Bracket)**: Toggle Twitch connection
+- `/minestream test <сообщение>` - Отобразить тестовое сообщение
+- `/minestream twitch start/stop` - Управление подключением к Twitch
+- `/minestream banword add/remove/list` - Управление фильтрами контента
+- `/minestream help` - Показать все доступные команды
 
-## Installation
+### Горячие клавиши
 
-1. Download the mod JAR file
-2. Place it in your Minecraft `mods` folder
-3. Start the game with Fabric Loader
-4. Configure your Twitch channel name in the mod settings
+- **`]` (Правая скобка)**: Открыть экран конфигурации
+- **`[` (Левая скобка)**: Переключить подключение к Twitch
 
-## Configuration
+## 🏗️ Техническое совершенство
 
-### Accessing Settings
+### Модульная архитектура
 
-Press `]` (right bracket) in-game to open the configuration screen, or use the command `/minestream test` to trigger the settings.
+- **Разделение ответственности**: Чистый, поддерживаемый код с отдельными компонентами
+- **Управление жизненным циклом**: Сложная система обработки состояний сообщений
+- **Оптимизация производительности**: Эффективный рендеринг с правильным управлением памятью
+- **Расширяемый дизайн**: Легко добавлять новые функции и режимы отображения
 
-### Available Settings
+### Продвинутые функции
 
-- **Twitch Channel Name**: The channel to connect to for chat messages
-- **Message Lifetime**: How long messages stay visible (in ticks)
-- **Message Fall Duration**: How long the fall animation lasts (in ticks)
-- **Freezing on View**: Whether messages freeze when player looks at them
-- **Max Freeze Distance**: Maximum distance for view-based freezing
-- **Spawn Mode**: Whether messages spawn around player or only in front
+- **История сообщений**: Отслеживание и просмотр прошлых сообщений чата
+- **Управление очередью**: Интеллектуальная очередь сообщений для предотвращения спама
+- **Многопоточность**: Неблокирующая обработка подключения к Twitch
+- **Восстановление после ошибок**: Надежная обработка ошибок и автоматическое переподключение
 
-## Technical Details
+## 📊 Что нового в v1.1.0
 
-### Architecture
+- **Режим HUD виджета**: Новый чистый режим отображения оверлея
+- **Масштабирование сообщений**: 5 различных размеров для лучшей видимости
+- **Улучшенная модерация**: Усовершенствованная система фильтрации контента
+- **Лучшее определение взгляда**: Более точный алгоритм ray-plane пересечения
+- **Система частиц**: Настраиваемые эффекты частиц при исчезновении сообщений
+- **Улучшения производительности**: Оптимизированный рендеринг и использование памяти
 
-The mod uses a modular architecture with clear separation of concerns:
+## 🔧 Настройки конфигурации
 
-- **Message System**: Handles message lifecycle, rendering, and positioning
-- **Twitch Integration**: Manages Twitch chat connection and message processing
-- **Configuration**: Provides in-game settings and persistence
-- **View Detection**: Advanced ray-plane intersection for accurate view detection
+- **Режим отображения**: Выбор между 3D миром или HUD виджетом
+- **Тайминги сообщений**: Настройка времени жизни, длительности падения и интервалов появления
+- **Визуальные настройки**: Регулировка масштаба, цветов и эффектов частиц
+- **Модерация**: Настройка фильтрации контента и списков банвордов
+- **Производительность**: Оптимизация под ваше железо и настройки стрима
 
-### Message Rendering
+## 🌟 Идеально для стримеров
 
-- Uses Minecraft's text renderer with custom 3D positioning
-- Implements 9-slice background panels for professional appearance
-- Supports text wrapping and dynamic sizing
-- Includes fall animation with quadratic easing
+- **Вовлечение зрителей**: Сделайте сообщения чата частью геймплея
+- **Безопасность контента**: Автоматическая модерация поддерживает семейный контент
+- **Настраиваемый опыт**: Адаптируйте отображение под свой стиль стрима
+- **Дружелюбность к производительности**: Минимальное влияние на производительность игры
 
-### View Detection System
+## 🚀 Установка и настройка
 
-The mod uses advanced ray-plane intersection to determine if a player is looking at a message:
+1. **Установите Fabric Loader** для Minecraft 1.21.7
+2. **Скачайте мод** с Modrinth или GitHub
+3. **Настройте Twitch**: Укажите имя канала в настройках мода (клавиша `]`)
+4. **Начните стримить**: Подключитесь к чату Twitch и наслаждайтесь!
 
-1. Calculates effective message age (accounting for freezing)
-2. Computes fall offset using the same logic as rendering
-3. Determines message dimensions based on text content
-4. Checks ray intersection with the message plane
-5. Verifies intersection point is within message bounds
-
-## Development
-
-### Building from Source
-
-```bash
-./gradlew build
-```
-
-### Project Structure
+## 📁 Структура проекта
 
 ```
 src/
 ├── client/java/takeyourminestream/modid/
-│   ├── messages/           # Message system components
+│   ├── messages/           # Система сообщений
 │   │   ├── Message.java
 │   │   ├── MessageRenderer.java
+│   │   ├── MessageHudRenderer.java
 │   │   ├── MessageViewDetector.java
 │   │   ├── MessageLifecycleManager.java
 │   │   ├── MessageSpawner.java
 │   │   ├── MessageQueue.java
 │   │   ├── MessagePosition.java
+│   │   ├── MessageParticle*.java
 │   │   └── MessageSystemFactory.java
+│   ├── config/             # Система конфигурации
+│   │   ├── ModConfigData.java
+│   │   ├── MessageSpawnMode.java
+│   │   └── MessageScale.java
+│   ├── commands/           # Система команд
+│   ├── input/              # Обработка ввода
+│   ├── utils/              # Утилиты
 │   ├── TwitchChatClient.java
 │   ├── TwitchManager.java
-│   ├── ModConfig.java
-│   ├── ModConfigScreen.java
+│   ├── BanwordManager.java
 │   ├── ConfigManager.java
 │   └── TakeYourMineStreamClient.java
 └── main/java/takeyourminestream/modid/
     └── TakeYourMineStream.java
 ```
 
-### Dependencies
+## 🤝 Разработка
 
-- **Fabric API**: For mod framework and rendering
-- **Gson**: For configuration persistence
-- **Java Sockets**: For direct Twitch IRC connection (no external Twitch library required)
+### Сборка из исходников
 
-## Contributing
+```bash
+./gradlew build
+```
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+### Зависимости
 
-## License
+- **Fabric API**: Для фреймворка мода и рендеринга
+- **Gson**: Для сохранения конфигурации
+- **Java Sockets**: Для прямого подключения к Twitch IRC (без внешних библиотек)
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+## 📝 Лицензия
 
-## Support
-
-If you encounter any issues or have questions, please open an issue on the project's GitHub page.
+Этот проект лицензирован под MIT License - см. файл LICENSE для деталей.
 
 ---
 
-**Note**: This mod requires Fabric Loader and is compatible with Minecraft 1.21.7.
+**Преобразите свои Minecraft стримы с Take Your MineStream - где чат становится частью приключения!**
+
+_Для поддержки, запросов функций или участия в разработке посетите наш [GitHub репозиторий](https://github.com/ijustseen/take-your-minestream-template-1.21.7)_

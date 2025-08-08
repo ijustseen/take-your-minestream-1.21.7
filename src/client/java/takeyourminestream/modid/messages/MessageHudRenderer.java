@@ -8,6 +8,9 @@ import net.minecraft.text.Text;
 import net.minecraft.text.OrderedText;
 import takeyourminestream.modid.ModConfig;
 import takeyourminestream.modid.config.MessageSpawnMode;
+import net.minecraft.client.util.math.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
+import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +26,8 @@ public class MessageHudRenderer {
     private static final int MESSAGE_SPACING = 2;
     private static final int BACKGROUND_COLOR = 0x80000000; // Полупрозрачный черный
     private static final int TEXT_COLOR = 0xFFFFFFFF; // Белый текст
-    private static final int MAX_MESSAGE_WIDTH = 300;
+    
+
     
     public MessageHudRenderer(MessageLifecycleManager lifecycleManager) {
         this.lifecycleManager = lifecycleManager;
@@ -50,6 +54,13 @@ public class MessageHudRenderer {
         List<Message> messagesToDisplay = getMessagesToDisplay(activeMessages);
         if (messagesToDisplay.isEmpty()) return;
         
+        // В HUD режиме не применяем масштабирование - используем фиксированные размеры
+        int padding = MESSAGE_PADDING;
+        
+        // Фиксированная правая граница для всех сообщений (близко к краю экрана)
+        int fixedRightEdge = screenWidth - MESSAGE_MARGIN;
+        
+        // Рендерим каждое сообщение
         int currentY = MESSAGE_MARGIN;
         
         for (Message message : messagesToDisplay) {
@@ -57,38 +68,33 @@ public class MessageHudRenderer {
             float alpha = calculateMessageAlpha(message);
             if (alpha <= 0.0f) continue;
             
-            // Разбиваем текст на строки
-            List<OrderedText> wrappedText = textRenderer.wrapLines(Text.of(message.getText()), MAX_MESSAGE_WIDTH - MESSAGE_PADDING * 2);
+            // Разбиваем текст на строки (фиксированная ширина как в 3D режимах)
+            List<OrderedText> wrappedText = textRenderer.wrapLines(Text.of(message.getText()), 120);
             
-            // Вычисляем размеры панели
-            int maxLineWidth = 0;
+            // Находим максимальную ширину среди всех строк
+            int maxTextWidth = 0;
             for (OrderedText line : wrappedText) {
-                int lineWidth = textRenderer.getWidth(line);
-                if (lineWidth > maxLineWidth) {
-                    maxLineWidth = lineWidth;
-                }
+                int w = textRenderer.getWidth(line);
+                if (w > maxTextWidth) maxTextWidth = w;
             }
             
-            int panelWidth = maxLineWidth + MESSAGE_PADDING * 2;
-            int panelHeight = wrappedText.size() * textRenderer.fontHeight + MESSAGE_PADDING * 2;
+            // Вычисляем размеры панели на основе реального размера текста без масштабирования
+            int panelWidth = maxTextWidth + padding * 2;
+            int panelHeight = wrappedText.size() * textRenderer.fontHeight + padding * 2;
             
-            // Позиция панели (справа)
-            int panelX = screenWidth - panelWidth - MESSAGE_MARGIN;
+            // Позиция панели - выравниваем по фиксированной правой границе
+            int panelX = fixedRightEdge - panelWidth;
             int panelY = currentY;
             
-            // Рендерим фон панели с альфа-каналом
+            // Рендерим фон сообщения
             int backgroundColor = applyAlpha(BACKGROUND_COLOR, alpha);
             drawContext.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, backgroundColor);
             
-            // Рендерим текст
+            // Рендерим текст с выравниванием по правому краю
             int textColor = applyAlpha(TEXT_COLOR, alpha);
-            int textY = panelY + MESSAGE_PADDING;
-            
-            for (OrderedText line : wrappedText) {
-                int textX = panelX + MESSAGE_PADDING;
-                drawContext.drawText(textRenderer, line, textX, textY, textColor, true);
-                textY += textRenderer.fontHeight;
-            }
+            renderRightAlignedText(drawContext, textRenderer, wrappedText, 
+                                 fixedRightEdge - padding, panelY + padding, 
+                                 textColor, 1.0f);
             
             currentY += panelHeight + MESSAGE_SPACING;
         }
@@ -139,4 +145,27 @@ public class MessageHudRenderer {
         int newAlpha = (int)(originalAlpha * alpha);
         return (color & 0x00FFFFFF) | (newAlpha << 24);
     }
+    
+    /**
+     * Рендерит текст с выравниванием по правому краю
+     * В HUD режиме не применяем масштабирование к тексту, только к размерам панелей
+     */
+    private void renderRightAlignedText(DrawContext drawContext, TextRenderer textRenderer, 
+                                      List<OrderedText> lines, int rightEdge, int y, int color, float scale) {
+        
+        // Рендерим каждую строку, выравнивая по правому краю
+        for (int i = 0; i < lines.size(); i++) {
+            // Используем обычную высоту строки без масштабирования
+            int lineY = y + i * textRenderer.fontHeight;
+            
+            // Вычисляем ширину строки и позицию X для выравнивания по правому краю
+            int lineWidth = textRenderer.getWidth(lines.get(i));
+            int lineX = rightEdge - lineWidth;
+            
+            // Рендерим текст без масштабирования - размер адаптируется к настройкам GUI игрока
+            drawContext.drawText(textRenderer, lines.get(i), lineX, lineY, color, false);
+        }
+    }
+    
+
 }
