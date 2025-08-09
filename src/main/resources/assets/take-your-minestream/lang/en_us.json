@@ -29,6 +29,8 @@
   "takeyourminestream.banwords.title": "Manage Banwords",
   "takeyourminestream.banwords.input": "Enter word",
   "takeyourminestream.banwords.add": "Add",
+  "takeyourminestream.banwords.show": "Show",
+  "takeyourminestream.banwords.hide": "Hide",
   "takeyourminestream.config.twitch_on": "On",
   "takeyourminestream.config.twitch_off": "Off",
   "takeyourminestream.config.category.general": "General",

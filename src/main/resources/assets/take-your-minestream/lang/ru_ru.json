@@ -29,6 +29,8 @@
   "takeyourminestream.banwords.title": "Управление банвордами",
   "takeyourminestream.banwords.input": "Введите слово",
   "takeyourminestream.banwords.add": "Добавить",
+  "takeyourminestream.banwords.show": "Показать",
+  "takeyourminestream.banwords.hide": "Скрыть",
   "takeyourminestream.config.twitch_on": "Вкл",
   "takeyourminestream.config.twitch_off": "Выкл",
   "takeyourminestream.config.category.general": "Общие",
