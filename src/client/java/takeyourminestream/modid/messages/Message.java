@@ -12,14 +12,20 @@ public class Message {
     private int frozenTicks;
     private final float yaw;
     private final float pitch;
+    private final Integer authorColorRgb; // null если неизвестен
     
     public Message(String text, Vec3d position, long spawnTick, float yaw, float pitch) {
+        this(text, position, spawnTick, yaw, pitch, null);
+    }
+
+    public Message(String text, Vec3d position, long spawnTick, float yaw, float pitch, Integer authorColorRgb) {
         this.text = text;
         this.position = position;
         this.spawnTick = spawnTick;
         this.frozenTicks = 0;
         this.yaw = yaw;
         this.pitch = pitch;
+        this.authorColorRgb = authorColorRgb;
     }
     
     public String getText() { 
@@ -44,6 +50,7 @@ public class Message {
     
     public float getYaw() { return yaw; }
     public float getPitch() { return pitch; }
+    public Integer getAuthorColorRgb() { return authorColorRgb; }
     
     /**
      * Вычисляет эффективный возраст сообщения с учетом замороженного времени

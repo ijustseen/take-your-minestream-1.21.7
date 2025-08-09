@@ -34,4 +34,9 @@ public interface IBanwordManager {
      * @param banword банворд для удаления
      */
     void removeBanword(String banword);
+
+    /**
+     * Возвращает неизменяемый набор текущих банвордов
+     */
+    java.util.Set<String> getBanwords();
 } 

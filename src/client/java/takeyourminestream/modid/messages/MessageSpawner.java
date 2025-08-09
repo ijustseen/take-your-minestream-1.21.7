@@ -22,15 +22,17 @@ public class MessageSpawner {
                 
                 // Проверяем, можно ли спавнить новое сообщение
                 if (messageQueue.canSpawnMessage(lifecycleManager.getTickCounter())) {
-                    String messageText = messageQueue.dequeueMessage(lifecycleManager.getTickCounter());
-                    if (messageText != null) {
+                    var queued = messageQueue.dequeueMessage(lifecycleManager.getTickCounter());
+                    if (queued != null) {
+                        String messageText = queued.text;
+                        Integer authorColor = queued.authorColorRgb;
                         var spawnMode = takeyourminestream.modid.ModConfig.getMESSAGE_SPAWN_MODE();
                         
                         // В HUD режиме создаем сообщение без 3D позиции
                         if (spawnMode == takeyourminestream.modid.config.MessageSpawnMode.HUD_WIDGET) {
                             // Для HUD режима создаем сообщение с нулевой позицией
                             var position = net.minecraft.util.math.Vec3d.ZERO;
-                            var message = new Message(messageText, position, lifecycleManager.getTickCounter(), 0, 0);
+                            var message = new Message(messageText, position, lifecycleManager.getTickCounter(), 0, 0, authorColor);
                             lifecycleManager.addMessage(message);
                         } else {
                             // Для 3D режимов генерируем позицию в пространстве
@@ -45,7 +47,7 @@ public class MessageSpawner {
                             double distXZ = Math.sqrt(dx * dx + dz * dz);
                             float yaw = (float)(MathHelper.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0f;
                             float pitch = (float)-(MathHelper.atan2(dy, distXZ) * (180.0 / Math.PI));
-                            var message = new Message(messageText, position, lifecycleManager.getTickCounter(), yaw, pitch);
+                            var message = new Message(messageText, position, lifecycleManager.getTickCounter(), yaw, pitch, authorColor);
                             lifecycleManager.addMessage(message);
                         }
                     }
@@ -66,6 +68,15 @@ public class MessageSpawner {
         } else {
             // Добавляем сообщение в очередь
             messageQueue.enqueueMessage(message);
+        }
+    }
+
+    public void setCurrentMessage(String message, Integer authorColorRgb) {
+        if (message.isEmpty()) {
+            messageQueue.clear();
+            lifecycleManager.clearAllMessages();
+        } else {
+            messageQueue.enqueueMessage(message, authorColorRgb);
         }
     }
     

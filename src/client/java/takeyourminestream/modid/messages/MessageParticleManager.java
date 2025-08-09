@@ -41,12 +41,10 @@ public class MessageParticleManager {
         matrices.push();
         for (MessageParticle p : particles) {
             float alpha = 1.0f;
-            int r = p.color.getRed();
-            int g = p.color.getGreen();
-            int b = p.color.getBlue();
-            float fr = r / 255.0f;
-            float fg = g / 255.0f;
-            float fb = b / 255.0f;
+            // Без тонировки: рендерим текстуру как есть
+            float fr = 1.0f;
+            float fg = 1.0f;
+            float fb = 1.0f;
             // Переводим мировые координаты в локальные относительно камеры
             double camX = client.gameRenderer.getCamera().getPos().getX();
             double camY = client.gameRenderer.getCamera().getPos().getY();
@@ -64,37 +62,14 @@ public class MessageParticleManager {
             float sz = p.size * 0.025f;
             // Получаем матрицу
             Matrix4f mat = matrices.peek().getPositionMatrix();
+            // Используем оригинальную текстуру партикла без сдвига цветов
             VertexConsumer consumer = consumers.getBuffer(RenderLayer.getEntityTranslucent(PARTICLE_TEXTURE));
             int light = 0xF000F0;
             int overlay = 0;
-            // TODO: поддержка цветных партиклов через .color(fr, fg, fb, alpha)
-            // Сейчас всегда белый цвет, чтобы не было оттенков
-            fr = 1f; fg = 1f; fb = 1f;
-            // Вершины квадрата (XY-плоскость)
-            consumer.vertex(mat, -sz/2, -sz/2, 0)
-                    .color(fr, fg, fb, alpha)
-                    .texture(0, 0)
-                    .overlay(overlay)
-                    .light(light)
-                    .normal(0, 0, -1);
-            consumer.vertex(mat, -sz/2, sz/2, 0)
-                    .color(fr, fg, fb, alpha)
-                    .texture(0, 1)
-                    .overlay(overlay)
-                    .light(light)
-                    .normal(0, 0, -1);
-            consumer.vertex(mat, sz/2, sz/2, 0)
-                    .color(fr, fg, fb, alpha)
-                    .texture(1, 1)
-                    .overlay(overlay)
-                    .light(light)
-                    .normal(0, 0, -1);
-            consumer.vertex(mat, sz/2, -sz/2, 0)
-                    .color(fr, fg, fb, alpha)
-                    .texture(1, 0)
-                    .overlay(overlay)
-                    .light(light)
-                    .normal(0, 0, -1);
+            consumer.vertex(mat, -sz/2, -sz/2, 0).color(fr, fg, fb, alpha).texture(0, 0).overlay(overlay).light(light).normal(0, 0, -1);
+            consumer.vertex(mat, -sz/2,  sz/2, 0).color(fr, fg, fb, alpha).texture(0, 1).overlay(overlay).light(light).normal(0, 0, -1);
+            consumer.vertex(mat,  sz/2,  sz/2, 0).color(fr, fg, fb, alpha).texture(1, 1).overlay(overlay).light(light).normal(0, 0, -1);
+            consumer.vertex(mat,  sz/2, -sz/2, 0).color(fr, fg, fb, alpha).texture(1, 0).overlay(overlay).light(light).normal(0, 0, -1);
             matrices.pop();
         }
         matrices.pop();

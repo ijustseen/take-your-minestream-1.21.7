@@ -100,7 +100,7 @@ public class CommandManager {
     }
 
     private int executeBanwordListCommand() {
-        Set<String> banwords = ((BanwordManager) banwordManager).getBanwords();
+        Set<String> banwords = banwordManager.getBanwords();
         if (banwords.isEmpty()) {
             Logger.sendInfoToPlayer("Список банвордов пуст");
         } else {

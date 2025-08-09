@@ -7,7 +7,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Управляет очередью сообщений для отображения
  */
 public class MessageQueue {
-    private final Queue<String> messageQueue = new ConcurrentLinkedQueue<>();
+    public static class QueuedMessage {
+        public final String text;
+        public final Integer authorColorRgb; // может быть null
+        public QueuedMessage(String text, Integer authorColorRgb) {
+            this.text = text;
+            this.authorColorRgb = authorColorRgb;
+        }
+    }
+
+    private final Queue<QueuedMessage> messageQueue = new ConcurrentLinkedQueue<>();
     private long lastMessageSpawnTime = 0;
     private static final int MIN_TICKS_BETWEEN_MESSAGES = 0; // Минимум тиков между спавном сообщений
     
@@ -16,7 +25,11 @@ public class MessageQueue {
      * @param message текст сообщения
      */
     public void enqueueMessage(String message) {
-        messageQueue.offer(message);
+        messageQueue.offer(new QueuedMessage(message, null));
+    }
+
+    public void enqueueMessage(String message, Integer authorColorRgb) {
+        messageQueue.offer(new QueuedMessage(message, authorColorRgb));
     }
     
     /**
@@ -34,9 +47,9 @@ public class MessageQueue {
      * @param currentTick текущий тик
      * @return текст сообщения или null, если очередь пуста
      */
-    public String dequeueMessage(int currentTick) {
+    public QueuedMessage dequeueMessage(int currentTick) {
         if (canSpawnMessage(currentTick)) {
-            String message = messageQueue.poll();
+            QueuedMessage message = messageQueue.poll();
             if (message != null) {
                 lastMessageSpawnTime = currentTick;
             }

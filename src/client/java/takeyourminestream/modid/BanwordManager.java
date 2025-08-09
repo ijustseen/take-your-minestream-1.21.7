@@ -6,6 +6,7 @@ import takeyourminestream.modid.interfaces.IBanwordManager;
 import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.InputStreamReader;
+import java.io.BufferedWriter;
 import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -20,6 +21,7 @@ import java.util.logging.Logger;
 public class BanwordManager implements IBanwordManager {
     private static final Logger LOGGER = Logger.getLogger(BanwordManager.class.getName());
     private static final String RESOURCE_PATH = "/assets/take-your-minestream/banned_words.json";
+    private static final String USER_FILE_NAME = "take-your-minestream-banwords.json";
     private static BanwordManager instance;
     
     private final Set<String> banwords = new HashSet<>();
@@ -49,6 +51,25 @@ public class BanwordManager implements IBanwordManager {
             }
         } catch (Exception e) {
             LOGGER.severe("Ошибка при загрузке банвордов: " + e.getMessage());
+        }
+
+        // Загрузка пользовательского файла и слияние
+        try {
+            Path userFile = FabricLoader.getInstance().getConfigDir().resolve(USER_FILE_NAME);
+            if (Files.exists(userFile)) {
+                try (InputStreamReader reader = new InputStreamReader(Files.newInputStream(userFile), StandardCharsets.UTF_8)) {
+                    Type listType = new TypeToken<List<String>>(){}.getType();
+                    List<String> userWords = new Gson().fromJson(reader, listType);
+                    if (userWords != null) {
+                        for (String w : userWords) {
+                            if (w != null && !w.trim().isEmpty()) banwords.add(w.trim().toLowerCase());
+                        }
+                        LOGGER.info("Загружено пользовательских банвордов: " + userWords.size());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Ошибка при загрузке пользовательских банвордов: " + e.getMessage());
         }
     }
 
@@ -93,6 +114,7 @@ public class BanwordManager implements IBanwordManager {
         if (banword != null && !banword.trim().isEmpty()) {
             banwords.add(banword.trim().toLowerCase());
             LOGGER.info("Добавлен банворд: " + banword);
+            saveUserBanwords();
         }
     }
 
@@ -102,11 +124,24 @@ public class BanwordManager implements IBanwordManager {
             boolean removed = banwords.remove(banword.trim().toLowerCase());
             if (removed) {
                 LOGGER.info("Удален банворд: " + banword);
+                saveUserBanwords();
             }
         }
     }
 
     public Set<String> getBanwords() {
         return Collections.unmodifiableSet(banwords);
+    }
+
+    private void saveUserBanwords() {
+        try {
+            Path userFile = FabricLoader.getInstance().getConfigDir().resolve(USER_FILE_NAME);
+            List<String> list = banwords.stream().sorted().toList();
+            try (BufferedWriter writer = Files.newBufferedWriter(userFile, StandardCharsets.UTF_8)) {
+                new Gson().toJson(list, writer);
+            }
+        } catch (Exception e) {
+            LOGGER.severe("Ошибка при сохранении пользовательских банвордов: " + e.getMessage());
+        }
     }
 } 

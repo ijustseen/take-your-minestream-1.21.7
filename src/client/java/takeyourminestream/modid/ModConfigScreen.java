@@ -153,6 +153,14 @@ public class ModConfigScreen extends Screen {
         ).dimensions(0, 0, CONTROL_WIDTH, 20).build();
         this.addDrawableChild(automoderationButton);
         configEntries.add(new ConfigEntry("takeyourminestream.config.automoderation", "takeyourminestream.config.automoderation.desc", ConfigEntryType.TOGGLE, automoderationButton, ConfigCategory.GENERAL));
+
+        // Кнопка настроек банвордов под флагом автомодерации
+        ButtonWidget banwordsButton = ButtonWidget.builder(
+            Text.translatable("takeyourminestream.config.banwords_config"),
+            btn -> this.client.setScreen(new BanwordConfigScreen(this))
+        ).dimensions(0, 0, CONTROL_WIDTH, 20).build();
+        this.addDrawableChild(banwordsButton);
+        configEntries.add(new ConfigEntry("takeyourminestream.config.banwords", "takeyourminestream.config.banwords.desc", ConfigEntryType.BUTTON, banwordsButton, ConfigCategory.GENERAL));
         
         // Настройки сообщений
         TextFieldWidget messageLifetimeField = new TextFieldWidget(textRenderer, 0, 0, CONTROL_WIDTH, 20, Text.translatable("takeyourminestream.config.message_lifetime"));

@@ -56,9 +56,9 @@ public class MessageParticleSpawner {
             float rotation = random.nextFloat() * 360f;
             float rotationSpeed = (random.nextFloat() - 0.5f) * 8f; // -4..+4 градусов за тик
 
-            // Цвет: половина партиклов — цвет текста, половина — цвет фона
+            // Цвет: половина партиклов — цвет текста (цвет автора, если известен), половина — цвет фона
             MessageParticle.ParticleType type = (i % 2 == 0) ? MessageParticle.ParticleType.TEXT_COLOR : MessageParticle.ParticleType.BACKGROUND_COLOR;
-            Color color = (type == MessageParticle.ParticleType.TEXT_COLOR) ? getTextColor() : getPanelColor();
+            Color color = (type == MessageParticle.ParticleType.TEXT_COLOR) ? getTextColor(message) : getPanelColor();
 
             particles.add(new MessageParticle(world, velocity, color, particleSize, lifetime, type, rotation, rotationSpeed, yaw, pitch));
         }
@@ -79,7 +79,14 @@ public class MessageParticleSpawner {
     }
 
     // Цвет текста (белый, либо можно доработать для поддержки цветных сообщений)
-    private static Color getTextColor() {
+    private static Color getTextColor(Message message) {
+        Integer rgb = message.getAuthorColorRgb();
+        if (rgb != null) {
+            int r = (rgb >> 16) & 0xFF;
+            int g = (rgb >> 8) & 0xFF;
+            int b = (rgb) & 0xFF;
+            return new Color(r, g, b);
+        }
         return new Color(255, 255, 255);
     }
 

@@ -2,12 +2,15 @@ package takeyourminestream.modid;
 
 import takeyourminestream.modid.messages.MessageSpawner;
 import java.io.*;
-import java.net.Socket;
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
 import java.util.Random;
 import takeyourminestream.modid.ModConfig;
+import java.util.HashMap;
+import java.util.Map;
 
 public class TwitchChatClient {
-    private Socket socket;
+    private SSLSocket socket;
     private BufferedWriter writer;
     private BufferedReader reader;
     private Thread listenThread;
@@ -15,6 +18,7 @@ public class TwitchChatClient {
     private final Random random = new Random();
     private final MessageSpawner messageSpawner;
     private String channelName;
+    private final Map<String, Integer> nameColorCache = new HashMap<>();
 
     public TwitchChatClient(String channelName, MessageSpawner messageSpawner) {
         this.channelName = channelName;
@@ -28,9 +32,14 @@ public class TwitchChatClient {
 
     private void connect() {
         try {
-            socket = new Socket("irc.chat.twitch.tv", 6667);
+            SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+            socket = (SSLSocket) factory.createSocket("irc.chat.twitch.tv", 6697);
+            socket.startHandshake();
             writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
             reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            // Запрашиваем расширенные возможности Twitch IRC
+            sendRaw("CAP REQ :twitch.tv/tags twitch.tv/commands twitch.tv/membership");
 
             // Анонимная авторизация (можно заменить на свой логин/токен при необходимости)
             String nick = "justinfan" + (10000 + random.nextInt(90000));
@@ -42,7 +51,7 @@ public class TwitchChatClient {
             listenThread = new Thread(this::listenLoop, "TwitchIRC-Listen");
             listenThread.setDaemon(true);
             listenThread.start();
-            System.out.println("[IRC] Connected to Twitch IRC as " + nick + ", joined #" + channelName);
+            System.out.println("[IRC] Connected (TLS) to Twitch IRC as " + nick + ", joined #" + channelName);
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("[IRC] Failed to connect to Twitch IRC");
@@ -60,23 +69,13 @@ public class TwitchChatClient {
             while (running && (line = reader.readLine()) != null) {
                 if (line.startsWith("PING ")) {
                     sendRaw("PONG " + line.substring(5));
-                } else if (line.contains("PRIVMSG")) {
-                    // Пример строки:
-                    // :username!username@username.tmi.twitch.tv PRIVMSG #channel :message text
-                    int excl = line.indexOf('!');
-                    int colon = line.indexOf(" :", 1);
-                    int hash = line.indexOf("#");
-                    if (excl > 1 && colon > 1 && hash > 1) {
-                        String user = line.substring(1, excl);
-                        String message = line.substring(colon + 2);
-                        String channel = line.substring(hash + 1, line.indexOf(' ', hash));
-                        System.out.println("[" + channel + "] " + user + ": " + message);
-                        String filteredMessage = message;
-                        if (ModConfig.isENABLE_AUTOMODERATION() && BanwordManager.getInstance().containsBanwords(message)) {
-                            filteredMessage = BanwordManager.getInstance().filterBanwords(message);
-                        }
-                        messageSpawner.setCurrentMessage(getRandomColor() + user + ":§r " + filteredMessage);
-                    }
+                } else if (line.contains(" PRVMSG ") || line.contains(" PRIVMSG ")) {
+                    handlePrivMsg(line);
+                } else if (line.contains(" CLEARCHAT ")) {
+                    // Сообщение о чистке чата/таймауте/бане
+                    System.out.println("[IRC] CLEARCHAT: " + line);
+                } else if (line.contains(" NOTICE ")) {
+                    System.out.println("[IRC] NOTICE: " + line);
                 }
             }
         } catch (IOException e) {
@@ -85,6 +84,98 @@ public class TwitchChatClient {
             }
         }
         System.out.println("[IRC] Disconnected from Twitch IRC");
+        // Реконнект с задержкой, если запущено
+        if (running) {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException ignored) {}
+            connect();
+        }
+    }
+
+    private void handlePrivMsg(String line) throws IOException {
+        // Пример с тегами:
+        // @badge-info=;badges=;color=#1E90FF;display-name=User;... :user!user@user.tmi.twitch.tv PRIVMSG #channel :message
+        String tagsPart = null;
+        String rest = line;
+        if (line.startsWith("@")) {
+            int space = line.indexOf(' ');
+            tagsPart = line.substring(1, space);
+            rest = line.substring(space + 1);
+        }
+        int excl = rest.indexOf('!');
+        int colon = rest.indexOf(" :", 1);
+        int hash = rest.indexOf("#");
+        if (excl > 1 && colon > 1 && hash > 1) {
+            String user = rest.substring(1, excl);
+            String message = rest.substring(colon + 2);
+            String channel = rest.substring(hash + 1, rest.indexOf(' ', hash));
+
+            String displayName = user;
+            Integer rgb = null;
+            if (tagsPart != null) {
+                String[] tags = tagsPart.split(";");
+                for (String tag : tags) {
+                    int eq = tag.indexOf('=');
+                    String key = eq >= 0 ? tag.substring(0, eq) : tag;
+                    String val = eq >= 0 ? tag.substring(eq + 1) : "";
+                    if (key.equals("display-name") && !val.isEmpty()) {
+                        displayName = val;
+                    } else if (key.equals("color") && val.startsWith("#") && val.length() == 7) {
+                        try {
+                            rgb = Integer.parseInt(val.substring(1), 16);
+                        } catch (NumberFormatException ignored) {}
+                    }
+                }
+            }
+
+            System.out.println("[" + channel + "] " + displayName + ": " + message);
+
+            String filteredMessage = message;
+            if (ModConfig.isENABLE_AUTOMODERATION() && BanwordManager.getInstance().containsBanwords(message)) {
+                filteredMessage = BanwordManager.getInstance().filterBanwords(message);
+            }
+            if (rgb != null) {
+                nameColorCache.put(displayName.toLowerCase(), rgb);
+            } else {
+                Integer cached = nameColorCache.get(displayName.toLowerCase());
+                if (cached != null) rgb = cached;
+            }
+
+            String colorPrefix = (rgb != null) ? toNearestSectionColor(rgb) : "§a";
+            String coloredName = colorPrefix + displayName + ":§r ";
+            messageSpawner.setCurrentMessage(coloredName + filteredMessage, rgb);
+        }
+    }
+
+    private String toNearestSectionColor(int rgb) {
+        // Сопоставление базовых цветов Minecraft к hex (RGB)
+        String[] codes = {"§0","§1","§2","§3","§4","§5","§6","§7","§8","§9","§a","§b","§c","§d","§e","§f"};
+        int[] colors = {
+            0x000000, 0x0000AA, 0x00AA00, 0x00AAAA,
+            0xAA0000, 0xAA00AA, 0xFFAA00, 0xAAAAAA,
+            0x555555, 0x5555FF, 0x55FF55, 0x55FFFF,
+            0xFF5555, 0xFF55FF, 0xFFFF55, 0xFFFFFF
+        };
+        int r = (rgb >> 16) & 0xFF;
+        int g = (rgb >> 8) & 0xFF;
+        int b = rgb & 0xFF;
+        int bestIdx = 10; // §a (зелёный) по умолчанию
+        long bestDist = Long.MAX_VALUE;
+        for (int i = 0; i < colors.length; i++) {
+            int cr = (colors[i] >> 16) & 0xFF;
+            int cg = (colors[i] >> 8) & 0xFF;
+            int cb = colors[i] & 0xFF;
+            long dr = r - cr;
+            long dg = g - cg;
+            long db = b - cb;
+            long dist = dr*dr + dg*dg + db*db;
+            if (dist < bestDist) {
+                bestDist = dist;
+                bestIdx = i;
+            }
+        }
+        return codes[bestIdx];
     }
 
     public void disconnect() {
