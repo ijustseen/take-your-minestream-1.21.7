@@ -163,21 +163,25 @@ public class ModConfigScreen extends Screen {
         configEntries.add(new ConfigEntry("takeyourminestream.config.banwords", "takeyourminestream.config.banwords.desc", ConfigEntryType.BUTTON, banwordsButton, ConfigCategory.GENERAL));
         
         // Настройки сообщений
-        TextFieldWidget messageLifetimeField = new TextFieldWidget(textRenderer, 0, 0, CONTROL_WIDTH, 20, Text.translatable("takeyourminestream.config.message_lifetime"));
-        messageLifetimeField.setText(String.valueOf(ModConfig.getMESSAGE_LIFETIME_TICKS()));
+        TextFieldWidget messageLifetimeField = new TextFieldWidget(textRenderer, 0, 0, CONTROL_WIDTH, 20, Text.translatable("takeyourminestream.config.message_lifetime_seconds"));
+        Object lifeSec = ConfigManager.getInstance().getConfigValue("messageLifetimeSeconds");
+        double lifeSeconds = lifeSec instanceof Number ? ((Number) lifeSec).doubleValue() : (ModConfig.getMESSAGE_LIFETIME_TICKS() / 20.0);
+        messageLifetimeField.setText(String.format(java.util.Locale.ROOT, "%.2f", lifeSeconds));
         messageLifetimeField.setChangedListener(s -> {
-            try { ConfigManager.getInstance().setConfigValue("messageLifetimeTicks", Integer.parseInt(s)); } catch (NumberFormatException ignored) {}
+            try { ConfigManager.getInstance().setConfigValue("messageLifetimeSeconds", Double.parseDouble(s)); } catch (NumberFormatException ignored) {}
         });
         this.addDrawableChild(messageLifetimeField);
-        configEntries.add(new ConfigEntry("takeyourminestream.config.message_lifetime", "takeyourminestream.config.message_lifetime.desc", ConfigEntryType.TEXT_FIELD, messageLifetimeField, ConfigCategory.MESSAGES));
+        configEntries.add(new ConfigEntry("takeyourminestream.config.message_lifetime_seconds", "takeyourminestream.config.message_lifetime_seconds.desc", ConfigEntryType.TEXT_FIELD, messageLifetimeField, ConfigCategory.MESSAGES));
         
-        TextFieldWidget messageFallField = new TextFieldWidget(textRenderer, 0, 0, CONTROL_WIDTH, 20, Text.translatable("takeyourminestream.config.message_fall"));
-        messageFallField.setText(String.valueOf(ModConfig.getMESSAGE_FALL_TICKS()));
+        TextFieldWidget messageFallField = new TextFieldWidget(textRenderer, 0, 0, CONTROL_WIDTH, 20, Text.translatable("takeyourminestream.config.message_fall_seconds"));
+        Object fallSec = ConfigManager.getInstance().getConfigValue("messageFallSeconds");
+        double fallSeconds = fallSec instanceof Number ? ((Number) fallSec).doubleValue() : (ModConfig.getMESSAGE_FALL_TICKS() / 20.0);
+        messageFallField.setText(String.format(java.util.Locale.ROOT, "%.2f", fallSeconds));
         messageFallField.setChangedListener(s -> {
-            try { ConfigManager.getInstance().setConfigValue("messageFallTicks", Integer.parseInt(s)); } catch (NumberFormatException ignored) {}
+            try { ConfigManager.getInstance().setConfigValue("messageFallSeconds", Double.parseDouble(s)); } catch (NumberFormatException ignored) {}
         });
         this.addDrawableChild(messageFallField);
-        configEntries.add(new ConfigEntry("takeyourminestream.config.message_fall", "takeyourminestream.config.message_fall.desc", ConfigEntryType.TEXT_FIELD, messageFallField, ConfigCategory.MESSAGES));
+        configEntries.add(new ConfigEntry("takeyourminestream.config.message_fall_seconds", "takeyourminestream.config.message_fall_seconds.desc", ConfigEntryType.TEXT_FIELD, messageFallField, ConfigCategory.MESSAGES));
         
         MessageScaleSliderWidget messageScaleSlider = new MessageScaleSliderWidget(0, 0, CONTROL_WIDTH, 20);
         this.addDrawableChild(messageScaleSlider);

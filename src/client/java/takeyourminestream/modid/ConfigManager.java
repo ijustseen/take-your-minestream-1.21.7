@@ -86,6 +86,12 @@ public class ConfigManager implements IConfigManager {
             case "messageFallTicks":
                 configData.setMessageFallTicks((Integer) value);
                 break;
+            case "messageLifetimeSeconds":
+                if (value instanceof Number) configData.setMessageLifetimeSeconds(((Number) value).doubleValue());
+                break;
+            case "messageFallSeconds":
+                if (value instanceof Number) configData.setMessageFallSeconds(((Number) value).doubleValue());
+                break;
             case "enableFreezingOnView":
                 configData.setEnableFreezingOnView((Boolean) value);
                 break;
@@ -123,6 +129,8 @@ public class ConfigManager implements IConfigManager {
         configCache.put("twitchChannelName", configData.getTwitchChannelName());
         configCache.put("messageLifetimeTicks", configData.getMessageLifetimeTicks());
         configCache.put("messageFallTicks", configData.getMessageFallTicks());
+        configCache.put("messageLifetimeSeconds", configData.getMessageLifetimeSeconds());
+        configCache.put("messageFallSeconds", configData.getMessageFallSeconds());
         configCache.put("enableFreezingOnView", configData.isEnableFreezingOnView());
         configCache.put("maxFreezeDistance", configData.getMaxFreezeDistance());
         configCache.put("messagesInFrontOfPlayerOnly", configData.isMessagesInFrontOfPlayerOnly());

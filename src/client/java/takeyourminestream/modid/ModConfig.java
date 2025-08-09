@@ -22,10 +22,19 @@ public class ModConfig {
     }
 
     public static int getMESSAGE_LIFETIME_TICKS() {
+        // Приоритет секунд; fallback на тики
+        Object sec = ConfigManager.getInstance().getConfigValue("messageLifetimeSeconds");
+        if (sec instanceof Number) {
+            return (int) Math.round(((Number) sec).doubleValue() * 20.0);
+        }
         return (Integer) ConfigManager.getInstance().getConfigValue("messageLifetimeTicks");
     }
 
     public static int getMESSAGE_FALL_TICKS() {
+        Object sec = ConfigManager.getInstance().getConfigValue("messageFallSeconds");
+        if (sec instanceof Number) {
+            return (int) Math.round(((Number) sec).doubleValue() * 20.0);
+        }
         return (Integer) ConfigManager.getInstance().getConfigValue("messageFallTicks");
     }
 

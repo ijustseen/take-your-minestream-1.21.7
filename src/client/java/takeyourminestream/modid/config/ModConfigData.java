@@ -5,8 +5,12 @@ package takeyourminestream.modid.config;
  */
 public class ModConfigData {
     private String twitchChannelName = "ijustseen_you";
+    // Старые поля для обратной совместимости (тики)
     private int messageLifetimeTicks = 80;
     private int messageFallTicks = 20;
+    // Новые поля: секунды (предпочтительное хранение для UI)
+    private double messageLifetimeSeconds = 4.0; // 80 тиков @20 TPS
+    private double messageFallSeconds = 1.0;     // 20 тиков @20 TPS
     private boolean enableFreezingOnView = true;
     private double maxFreezeDistance = 15.0;
     private MessageSpawnMode messageSpawnMode = MessageSpawnMode.AROUND_PLAYER;
@@ -23,6 +27,8 @@ public class ModConfigData {
     public String getTwitchChannelName() { return twitchChannelName; }
     public int getMessageLifetimeTicks() { return messageLifetimeTicks; }
     public int getMessageFallTicks() { return messageFallTicks; }
+    public double getMessageLifetimeSeconds() { return messageLifetimeSeconds; }
+    public double getMessageFallSeconds() { return messageFallSeconds; }
     public boolean isEnableFreezingOnView() { return enableFreezingOnView; }
     public double getMaxFreezeDistance() { return maxFreezeDistance; }
     public MessageSpawnMode getMessageSpawnMode() { return messageSpawnMode; }
@@ -39,6 +45,8 @@ public class ModConfigData {
     public void setTwitchChannelName(String twitchChannelName) { this.twitchChannelName = twitchChannelName; }
     public void setMessageLifetimeTicks(int messageLifetimeTicks) { this.messageLifetimeTicks = messageLifetimeTicks; }
     public void setMessageFallTicks(int messageFallTicks) { this.messageFallTicks = messageFallTicks; }
+    public void setMessageLifetimeSeconds(double messageLifetimeSeconds) { this.messageLifetimeSeconds = messageLifetimeSeconds; }
+    public void setMessageFallSeconds(double messageFallSeconds) { this.messageFallSeconds = messageFallSeconds; }
     public void setEnableFreezingOnView(boolean enableFreezingOnView) { this.enableFreezingOnView = enableFreezingOnView; }
     public void setMaxFreezeDistance(double maxFreezeDistance) { this.maxFreezeDistance = maxFreezeDistance; }
     public void setMessageSpawnMode(MessageSpawnMode messageSpawnMode) { this.messageSpawnMode = messageSpawnMode; }
