@@ -17,6 +17,7 @@ public class ModConfigData {
     private String[] nickColors = {"§c", "§9", "§a", "§5"};
     private MessageScale messageScale = MessageScale.NORMAL;
     private boolean showMessageBackground = true;
+    private boolean followPlayer = false;
 
     // Геттеры
     public String getTwitchChannelName() { return twitchChannelName; }
@@ -32,6 +33,7 @@ public class ModConfigData {
     public String[] getNickColors() { return nickColors; }
     public MessageScale getMessageScale() { return messageScale; }
     public boolean isShowMessageBackground() { return showMessageBackground; }
+    public boolean isFollowPlayer() { return followPlayer; }
 
     // Сеттеры
     public void setTwitchChannelName(String twitchChannelName) { this.twitchChannelName = twitchChannelName; }
@@ -47,6 +49,7 @@ public class ModConfigData {
     public void setNickColors(String[] nickColors) { this.nickColors = nickColors; }
     public void setMessageScale(MessageScale messageScale) { this.messageScale = messageScale; }
     public void setShowMessageBackground(boolean showMessageBackground) { this.showMessageBackground = showMessageBackground; }
+    public void setFollowPlayer(boolean followPlayer) { this.followPlayer = followPlayer; }
     
     // Методы для обратной совместимости
     public boolean isMessagesInFrontOfPlayerOnly() { 

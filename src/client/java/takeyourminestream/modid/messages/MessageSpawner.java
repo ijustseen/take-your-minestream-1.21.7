@@ -47,7 +47,9 @@ public class MessageSpawner {
                             double distXZ = Math.sqrt(dx * dx + dz * dz);
                             float yaw = (float)(MathHelper.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0f;
                             float pitch = (float)-(MathHelper.atan2(dy, distXZ) * (180.0 / Math.PI));
-                            var message = new Message(messageText, position, lifecycleManager.getTickCounter(), yaw, pitch, authorColor);
+                            // Фиксированное мировое смещение от глаз игрока (НЕ зависит от взгляда)
+                            var worldOffset = position.subtract(playerEyePos);
+                            var message = new Message(messageText, position, lifecycleManager.getTickCounter(), yaw, pitch, authorColor, worldOffset);
                             lifecycleManager.addMessage(message);
                         }
                     }

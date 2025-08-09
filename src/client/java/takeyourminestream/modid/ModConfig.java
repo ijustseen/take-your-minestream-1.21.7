@@ -96,4 +96,12 @@ public class ModConfig {
     public static void setSHOW_MESSAGE_BACKGROUND(boolean value) {
         ConfigManager.getInstance().setConfigValue("showMessageBackground", value);
     }
+
+    public static boolean isFOLLOW_PLAYER() {
+        return (Boolean) ConfigManager.getInstance().getConfigValue("followPlayer");
+    }
+
+    public static void setFOLLOW_PLAYER(boolean value) {
+        ConfigManager.getInstance().setConfigValue("followPlayer", value);
+    }
 } 

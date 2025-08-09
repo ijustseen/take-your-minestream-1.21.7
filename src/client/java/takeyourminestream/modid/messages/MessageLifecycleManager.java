@@ -1,6 +1,7 @@
 package takeyourminestream.modid.messages;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.util.math.MathHelper;
 import takeyourminestream.modid.ModConfig;
 
 import java.util.ArrayList;
@@ -35,6 +36,44 @@ public class MessageLifecycleManager {
         if (client.player == null || client.world == null) return;
         
         tickCounter++;
+        // Плавное следование за игроком (только для 3D режимов)
+        if (takeyourminestream.modid.ModConfig.isFOLLOW_PLAYER()
+                && takeyourminestream.modid.ModConfig.getMESSAGE_SPAWN_MODE() != takeyourminestream.modid.config.MessageSpawnMode.HUD_WIDGET) {
+            var eyePos = client.player.getEyePos();
+            // Время сглаживания (в тиках)
+            float positionSmoothTime = 14.0f;   // больше инерции
+            float yawSmoothTime = 12.0f;
+            float pitchSmoothTime = 12.0f;
+
+            // Коэффициенты экспон. сглаживания на тик
+            float positionLerp = clamp01(1.0f - (float)Math.exp(-1.0f / positionSmoothTime));
+            float yawLerp = clamp01(1.0f - (float)Math.exp(-1.0f / yawSmoothTime));
+            float pitchLerp = clamp01(1.0f - (float)Math.exp(-1.0f / pitchSmoothTime));
+
+            for (Message message : activeMessages) {
+                Vec3d local = message.getTargetOffsetFromEye();
+                if (local == null) continue; // для HUD или старых сообщений
+
+                // Целевая мировая позиция = глаза игрока + фиксированное мировое смещение (НЕ зависящее от yaw)
+                Vec3d targetWorld = eyePos.add(local);
+
+                // Плавное сближение к цели с нарастающей/затухающей скоростью (без клипа скорости)
+                Vec3d currentPos = message.getPosition();
+                Vec3d toTarget = targetWorld.subtract(currentPos);
+                Vec3d newPos = currentPos.add(toTarget.multiply(positionLerp));
+                message.setPosition(newPos);
+
+                // Ориентация: не мгновенно, а сглаженно смотрит на глаза игрока
+                double dx = eyePos.x - newPos.x;
+                double dy = eyePos.y - newPos.y;
+                double dz = eyePos.z - newPos.z;
+                double distXZ = Math.sqrt(dx * dx + dz * dz);
+                float targetYaw = (float)(MathHelper.atan2(dz, dx) * (180.0 / Math.PI)) - 90.0f;
+                float targetPitch = (float)-(MathHelper.atan2(dy, distXZ) * (180.0 / Math.PI));
+                message.setYaw(lerpAngleDegrees(message.getYaw(), targetYaw, yawLerp));
+                message.setPitch(lerpAngleDegrees(message.getPitch(), targetPitch, pitchLerp));
+            }
+        }
         
         // Обновляем замороженное время для всех сообщений
         if (ModConfig.isENABLE_FREEZING_ON_VIEW()) {
@@ -157,5 +196,14 @@ public class MessageLifecycleManager {
      */
     public void clearMessageHistory() {
         messageHistory.clear();
+    }
+
+    private static float lerpAngleDegrees(float a, float b, float t) {
+        float delta = MathHelper.wrapDegrees(b - a);
+        return a + delta * MathHelper.clamp(t, 0.0f, 1.0f);
+    }
+
+    private static float clamp01(float v) {
+        return v < 0.0f ? 0.0f : (v > 1.0f ? 1.0f : v);
     }
 } 

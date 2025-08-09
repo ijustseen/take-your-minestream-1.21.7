@@ -20,6 +20,7 @@ import net.minecraft.client.texture.AbstractTexture;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Отвечает за рендеринг сообщений в мире
@@ -27,6 +28,7 @@ import net.minecraft.client.render.OverlayTexture;
 public class MessageRenderer {
     private final MessageLifecycleManager lifecycleManager;
     private final MessageParticleManager particleManager;
+    private final java.util.WeakHashMap<Message, SmoothingState> smoothing = new java.util.WeakHashMap<>();
     
     private static final Identifier PANEL_TEXTURE = Identifier.of("take-your-minestream", "textures/gui/message_panel.png");
     private static final int PANEL_TEX_SIZE = 32;
@@ -92,13 +94,17 @@ public class MessageRenderer {
             return;
         }
 
+        // Сверхплавная интерполяция на стороне рендера (кадровая)
+        SmoothingState state = smoothing.computeIfAbsent(message, m -> SmoothingState.fromMessage(m));
+        state.updateTowards(message);
+
         matrices.translate(
-            message.getPosition().getX() - client.gameRenderer.getCamera().getPos().getX(),
-            message.getPosition().getY() - client.gameRenderer.getCamera().getPos().getY(),
-            message.getPosition().getZ() - client.gameRenderer.getCamera().getPos().getZ()
+            state.pos.x - client.gameRenderer.getCamera().getPos().getX(),
+            state.pos.y - client.gameRenderer.getCamera().getPos().getY(),
+            state.pos.z - client.gameRenderer.getCamera().getPos().getZ()
         );
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-message.getYaw()));
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(message.getPitch()));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-state.yaw));
+        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(state.pitch));
         
         // Применяем масштаб из конфигурации
         float baseScale = 0.025f;
@@ -139,6 +145,53 @@ public class MessageRenderer {
                               );
         }
         matrices.pop();
+    }
+
+    // Состояние сглаживания для кадро-зависимой интерполяции
+    private static class SmoothingState {
+        Vec3d pos;
+        float yaw;
+        float pitch;
+        long lastNs;
+
+        // Константы времён сглаживания (секунды)
+        private static final double TAU_POS = 0.15;   // чем больше, тем медленнее
+        private static final double TAU_ANG = 0.12;
+
+        static SmoothingState fromMessage(Message m) {
+            SmoothingState s = new SmoothingState();
+            s.pos = m.getPosition();
+            s.yaw = m.getYaw();
+            s.pitch = m.getPitch();
+            s.lastNs = System.nanoTime();
+            return s;
+        }
+
+        void updateTowards(Message target) {
+            long now = System.nanoTime();
+            double dt = Math.max(0.0, (now - lastNs) / 1_000_000_000.0);
+            lastNs = now;
+
+            // Экспоненциальное сглаживание к цели
+            double alphaPos = 1.0 - Math.exp(-dt / TAU_POS);
+            double alphaAng = 1.0 - Math.exp(-dt / TAU_ANG);
+
+            Vec3d tp = target.getPosition();
+            this.pos = new Vec3d(
+                lerp(this.pos.x, tp.x, alphaPos),
+                lerp(this.pos.y, tp.y, alphaPos),
+                lerp(this.pos.z, tp.z, alphaPos)
+            );
+
+            this.yaw = lerpAngleDeg(this.yaw, target.getYaw(), (float)alphaAng);
+            this.pitch = lerpAngleDeg(this.pitch, target.getPitch(), (float)alphaAng);
+        }
+
+        private static double lerp(double a, double b, double t) { return a + (b - a) * t; }
+        private static float lerpAngleDeg(float a, float b, float t) {
+            float delta = net.minecraft.util.math.MathHelper.wrapDegrees(b - a);
+            return a + delta * t;
+        }
     }
     
     /**

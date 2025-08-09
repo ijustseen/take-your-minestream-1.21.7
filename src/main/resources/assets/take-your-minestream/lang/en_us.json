@@ -46,6 +46,8 @@
   "takeyourminestream.config.max_freeze_distance.desc": "Maximum distance for message freezing (in blocks)",
   "takeyourminestream.config.show_message_bg": "Message Background:",
   "takeyourminestream.config.show_message_bg.desc": "Show semi-transparent background behind message text",
+  "takeyourminestream.config.follow_player": "Follow Player:",
+  "takeyourminestream.config.follow_player.desc": "3D messages smoothly follow the player, keeping their original relative offset",
   "takeyourminestream.history.title": "Message History",
   "takeyourminestream.history.close": "Close",
   "takeyourminestream.history.clear": "Clear History",

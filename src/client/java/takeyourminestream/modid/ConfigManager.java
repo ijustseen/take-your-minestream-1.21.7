@@ -107,6 +107,9 @@ public class ConfigManager implements IConfigManager {
             case "showMessageBackground":
                 configData.setShowMessageBackground((Boolean) value);
                 break;
+            case "followPlayer":
+                configData.setFollowPlayer((Boolean) value);
+                break;
             default:
                 LOGGER.warning("Неизвестный ключ конфигурации: " + key);
                 return;
@@ -131,6 +134,7 @@ public class ConfigManager implements IConfigManager {
         configCache.put("nickColors", configData.getNickColors());
         configCache.put("messageScale", configData.getMessageScale());
         configCache.put("showMessageBackground", configData.isShowMessageBackground());
+        configCache.put("followPlayer", configData.isFollowPlayer());
     }
 
     public ModConfigData getConfigData() {

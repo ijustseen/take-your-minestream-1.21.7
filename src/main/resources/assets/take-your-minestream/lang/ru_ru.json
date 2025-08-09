@@ -46,6 +46,8 @@
   "takeyourminestream.config.max_freeze_distance.desc": "Максимальная дистанция заморозки сообщений (в блоках)",
   "takeyourminestream.config.show_message_bg": "Фон сообщения:",
   "takeyourminestream.config.show_message_bg.desc": "Показывать полупрозрачный фон под текстом сообщения",
+  "takeyourminestream.config.follow_player": "Следовать за игроком:",
+  "takeyourminestream.config.follow_player.desc": "3D сообщения будут мягко следовать за игроком, удерживая исходное относительное смещение",
   "takeyourminestream.history.title": "История сообщений",
   "takeyourminestream.history.close": "Закрыть",
   "takeyourminestream.history.clear": "Очистить историю",
