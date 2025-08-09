@@ -86,9 +86,11 @@ public class MessageHudRenderer {
             int panelX = fixedRightEdge - panelWidth;
             int panelY = currentY;
             
-            // Рендерим фон сообщения
-            int backgroundColor = applyAlpha(BACKGROUND_COLOR, alpha);
-            drawContext.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, backgroundColor);
+            // Рендерим фон сообщения (по флагу)
+            if (ModConfig.isSHOW_MESSAGE_BACKGROUND()) {
+                int backgroundColor = applyAlpha(BACKGROUND_COLOR, alpha);
+                drawContext.fill(panelX, panelY, panelX + panelWidth, panelY + panelHeight, backgroundColor);
+            }
             
             // Рендерим текст с выравниванием по правому краю
             int textColor = applyAlpha(TEXT_COLOR, alpha);

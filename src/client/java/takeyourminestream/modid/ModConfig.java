@@ -88,4 +88,12 @@ public class ModConfig {
     public static void setMESSAGE_SCALE(takeyourminestream.modid.config.MessageScale value) {
         ConfigManager.getInstance().setConfigValue("messageScale", value);
     }
+
+    public static boolean isSHOW_MESSAGE_BACKGROUND() {
+        return (Boolean) ConfigManager.getInstance().getConfigValue("showMessageBackground");
+    }
+
+    public static void setSHOW_MESSAGE_BACKGROUND(boolean value) {
+        ConfigManager.getInstance().setConfigValue("showMessageBackground", value);
+    }
 } 

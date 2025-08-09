@@ -1,102 +1,49 @@
 # Take Your MineStream
 
-**Advanced Twitch Chat Integration for Minecraft** - Transform your streaming experience with intelligent chat display, smart moderation, and stunning visual effects!
+Turn Twitch chat into in‑game moments. Show messages in 3D around you or as a clean HUD overlay, keep content safe with smart moderation, and make your stream look professional with polished effects.
 
-## ✨ Key Features
+## Why streamers love it
 
-### Mnultiple Display Modes
+- **Chat becomes gameplay**: Viewers see their messages appear right in your world or on a clean HUD
+- **Safe by default**: Built‑in content filter keeps messages family‑friendly
+- **Looks great**: Smooth animations, particles, and scalable message sizes
+- **Zero fuss**: Configure everything in‑game and start streaming in minutes
+- **Performance‑friendly**: Lightweight and optimized for live play
 
-- **3D World Messages**: Floating text bubbles around or in front of the player
-- **HUD Widget**: Clean chat overlay in the top-right corner of your screen
-- **Smart Positioning**: Intelligent message placement with collision avoidance
+## What it does
 
-### Comprehensive Configuration
+- 3D world messages or HUD overlay (top‑right)
+- Messages pause when you look at them — read without rushing
+- Customizable banned words and smart auto‑censoring
+- Clean visuals with polished backgrounds and particles
 
-- **In-Game Settings**: Easy-to-use configuration screen accessible via keybind
-- **Real-time Adjustments**: Change settings without restarting the game
-- **Profile Support**: Save different configurations for different streaming scenarios
+## Quick start
 
-### 🎨 Rich Visual Experience
+1. Install Fabric Loader (and Fabric API)
+2. Put the mod `.jar` into your `mods` folder
+3. Launch the game and press `]` to open settings
+4. Enter your Twitch channel name and connect
 
-- **5 Message Scales**: From tiny to huge - perfect for any screen size
-- **Dynamic Particle Effects**: Messages shatter into beautiful particle effects when expiring
-- **Smooth Animations**: Realistic physics with quadratic fall curves
-- **Custom Backgrounds**: Professional 9-slice panel textures
+## Compatibility
 
-### 🧠 Intelligent View Detection
+- Works with modern Minecraft versions supported by Fabric
+- See the Releases tab for exact game version support
 
-- **Ray-Plane Intersection**: Advanced algorithm that accurately detects when you're looking at messages
-- **Message Freezing**: Messages pause their lifetime when you look directly at them
-- **Dynamic Sizing**: Accurate hit detection regardless of message length or scale
+## Commands & keybinds (essentials)
 
-### Advanced Moderation System
+- `/minestream test <message>` — show a test message
+- `/minestream twitch start` — connect to Twitch
+- `/minestream twitch stop` — disconnect
+- Keybinds: `]` open config
 
-- **Automatic Content Filtering**: Built-in profanity filter with customizable word lists
-- **Smart Censoring**: Replaces inappropriate content while preserving message readability
-- **Manual Moderation Tools**: Add/remove banned words via in-game commands
+## Customize your look
 
-## 🎮 Commands & Controls
-
-### Commands
-
-- `/minestream test <message>` - Display a test message
-- `/minestream twitch start/stop` - Control Twitch connection
-- `/minestream banword add/remove/list` - Manage content filters
-- `/minestream help` - Show all available commands
-
-### Keybinds
-
-- **`]` (Right Bracket)**: Open configuration screen
-
-## 🏗️ Technical Excellence
-
-### Modular Architecture
-
-- **Separation of Concerns**: Clean, maintainable codebase with distinct components
-- **Message Lifecycle Management**: Sophisticated system for handling message states
-- **Performance Optimized**: Efficient rendering with proper memory management
-- **Extensible Design**: Easy to add new features and display modes
-
-### Advanced Features
-
-- **Message History**: Track and review past chat messages
-- **Queue Management**: Intelligent message queuing to prevent spam
-- **Multi-threading**: Non-blocking Twitch connection handling
-- **Error Recovery**: Robust error handling and automatic reconnection
-
-## 📊 What's New in v1.1.0
-
-- **HUD Widget Mode**: New clean overlay display option
-- **Message Scaling**: 5 different size options for better visibility
-- **Enhanced Moderation**: Improved content filtering system
-- **Better View Detection**: More accurate ray-plane intersection algorithm
-- **Particle System**: Customizable particle effects when messages expire
-- **Performance Improvements**: Optimized rendering and memory usage
-
-## 🚀 Installation & Setup
-
-1. **Install Prerequisites**: Fabric Loader for Minecraft 1.21.7
-2. **Download the Mod**: Get the latest version from Modrinth
-3. **Configure Twitch**: Set your channel name in mod settings (`]` key)
-4. **Start Streaming**: Connect to Twitch chat and enjoy!
-
-## 🔧 Configuration Options
-
-- **Display Mode**: Choose between 3D world or HUD widget display
-- **Message Timing**: Customize lifetime, fall duration, and spawn intervals
-- **Visual Settings**: Adjust scale, colors, and particle effects
-- **Moderation**: Configure content filtering and banned word lists
-- **Performance**: Optimize for your hardware and streaming setup
-
-## 🌟 Perfect for Streamers
-
-- **Viewer Engagement**: Make chat messages part of your gameplay
-- **Content Safety**: Automatic moderation keeps your stream family-friendly
-- **Customizable Experience**: Adapt the display to match your streaming style
-- **Performance Friendly**: Minimal impact on game performance
+- Choose display mode: 3D world or HUD overlay
+- Tweak message lifetime, spawn intervals, fall timing
+- Adjust scale, colors, and particle effects
 
 ---
 
-**Transform your Minecraft streams with Take Your MineStream - where chat becomes part of the adventure!**
+**Transform your Minecraft streams with Take Your MineStream — where chat becomes part of the adventure!**
 
 _For support, feature requests, or to contribute, visit our [GitHub repository](https://github.com/ijustseen/take-your-minestream-template-1.21.7)_

@@ -187,6 +187,17 @@ public class ModConfigScreen extends Screen {
         this.addDrawableChild(spawnModeButton);
         configEntries.add(new ConfigEntry("takeyourminestream.config.spawn_mode_label", "takeyourminestream.config.spawn_mode.desc", ConfigEntryType.BUTTON, spawnModeButton, ConfigCategory.MESSAGES));
         
+        // Новый флаг: отображение фона сообщений
+        ButtonWidget showBgButton = ButtonWidget.builder(
+            Text.translatable(ModConfig.isSHOW_MESSAGE_BACKGROUND() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"),
+            btn -> {
+                ModConfig.setSHOW_MESSAGE_BACKGROUND(!ModConfig.isSHOW_MESSAGE_BACKGROUND());
+                btn.setMessage(Text.translatable(ModConfig.isSHOW_MESSAGE_BACKGROUND() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"));
+            }
+        ).dimensions(0, 0, CONTROL_WIDTH, 20).build();
+        this.addDrawableChild(showBgButton);
+        configEntries.add(new ConfigEntry("takeyourminestream.config.show_message_bg", "takeyourminestream.config.show_message_bg.desc", ConfigEntryType.TOGGLE, showBgButton, ConfigCategory.MESSAGES));
+        
         // Настройки поведения
         ButtonWidget freezingButton = ButtonWidget.builder(
             Text.translatable(ModConfig.isENABLE_FREEZING_ON_VIEW() ? "takeyourminestream.config.on" : "takeyourminestream.config.off"),

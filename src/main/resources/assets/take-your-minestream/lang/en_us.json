@@ -36,6 +36,8 @@
   "takeyourminestream.config.spawn_mode.desc": "Where messages appear in the world",
   "takeyourminestream.config.freezing_on_view.desc": "Freeze messages when looking at them",
   "takeyourminestream.config.max_freeze_distance.desc": "Maximum distance for message freezing (in blocks)",
+  "takeyourminestream.config.show_message_bg": "Message Background:",
+  "takeyourminestream.config.show_message_bg.desc": "Show semi-transparent background behind message text",
   "takeyourminestream.history.title": "Message History",
   "takeyourminestream.history.close": "Close",
   "takeyourminestream.history.clear": "Clear History",

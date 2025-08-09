@@ -104,6 +104,9 @@ public class ConfigManager implements IConfigManager {
             case "messageScale":
                 configData.setMessageScale((takeyourminestream.modid.config.MessageScale) value);
                 break;
+            case "showMessageBackground":
+                configData.setShowMessageBackground((Boolean) value);
+                break;
             default:
                 LOGGER.warning("Неизвестный ключ конфигурации: " + key);
                 return;
@@ -127,6 +130,7 @@ public class ConfigManager implements IConfigManager {
         configCache.put("particleLifetimeTicks", configData.getParticleLifetimeTicks());
         configCache.put("nickColors", configData.getNickColors());
         configCache.put("messageScale", configData.getMessageScale());
+        configCache.put("showMessageBackground", configData.isShowMessageBackground());
     }
 
     public ModConfigData getConfigData() {

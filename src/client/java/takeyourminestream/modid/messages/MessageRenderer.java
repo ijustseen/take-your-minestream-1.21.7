@@ -118,8 +118,10 @@ public class MessageRenderer {
         int panelHeight = (int)totalTextHeight + PANEL_PADDING_Y * 2;
         // Центрируем текст и панель + применяем падение
         matrices.translate(-maxTextWidth / 2.0f, -totalTextHeight / 2.0f + fallOffsetY, 0);
-        // Рендерим панель
-        renderPanel9Slice(matrices, -PANEL_PADDING_X, -PANEL_PADDING_Y, panelWidth, panelHeight, 1.0f, consumers);
+        // Рендерим панель (по флагу)
+        if (ModConfig.isSHOW_MESSAGE_BACKGROUND()) {
+            renderPanel9Slice(matrices, -PANEL_PADDING_X, -PANEL_PADDING_Y, panelWidth, panelHeight, 1.0f, consumers);
+        }
         // Рендерим текст
         for (int i = 0; i < wrappedText.size(); i++) {
             int alphaInt = 0xFF << 24;

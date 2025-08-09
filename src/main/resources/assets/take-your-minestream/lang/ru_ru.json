@@ -36,6 +36,8 @@
   "takeyourminestream.config.spawn_mode.desc": "Где появляются сообщения в мире",
   "takeyourminestream.config.freezing_on_view.desc": "Замораживать сообщения при взгляде на них",
   "takeyourminestream.config.max_freeze_distance.desc": "Максимальная дистанция заморозки сообщений (в блоках)",
+  "takeyourminestream.config.show_message_bg": "Фон сообщения:",
+  "takeyourminestream.config.show_message_bg.desc": "Показывать полупрозрачный фон под текстом сообщения",
   "takeyourminestream.history.title": "История сообщений",
   "takeyourminestream.history.close": "Закрыть",
   "takeyourminestream.history.clear": "Очистить историю",
