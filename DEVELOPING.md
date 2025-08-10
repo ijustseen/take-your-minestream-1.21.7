@@ -8,16 +8,17 @@ This document explains how to maintain multiple Minecraft versions in parallel u
 # From the main repo
 cd /Users/andrew/www/take-your-minestream
 
-# Create version branches (example scheme)
-# 1.21.x covers 1.21 / 1.21.1 / 1.21.5 / 1.21.6 unless a break occurs
-git checkout -b mc/1.21.x 1.21.7-8
-git checkout -b mc/1.20.1
-git checkout -b mc/1.16.5
+# Current version branches
+git checkout 1.21.7        # Main branch (latest)
+git checkout 1.21.4        # Minecraft 1.21.4 support
+git checkout 1.21          # Minecraft 1.21 support
+git checkout 1.21.1        # Minecraft 1.21.1 support
 
 # Add parallel worktrees (separate folders mapped to branches)
-git worktree add /Users/andrew/www/take-your-minestream-1.21.x mc/1.21.x
-git worktree add /Users/andrew/www/take-your-minestream-1.20.1 mc/1.20.1
-git worktree add /Users/andrew/www/take-your-minestream-1.16.5 mc/1.16.5
+git worktree add /Users/andrew/www/take-your-minestream-1.21.7 1.21.7
+git worktree add /Users/andrew/www/take-your-minestream-1.21.4 1.21.4
+git worktree add /Users/andrew/www/take-your-minestream-1.21 1.21
+git worktree add /Users/andrew/www/take-your-minestream-1.21.1 1.21.1
 
 # Enable Git conflict learning (saves time on repeated conflicts)
 git config --global rerere.enabled true
@@ -29,11 +30,12 @@ Open each worktree folder in your IDE to build/run that version independently.
 
 ### Branch scheme
 
-- `mc/1.21.x` — mainline for 1.21.\* (single JAR if compatible across patches)
-- `mc/1.20.1` — dedicated branch for 1.20.1
-- `mc/1.16.5` — dedicated branch for 1.16.5
+- `1.21.7` — main branch (latest Minecraft version)
+- `1.21.4` — dedicated branch for Minecraft 1.21.4
+- `1.21` — dedicated branch for Minecraft 1.21
+- `1.21.1` — dedicated branch for Minecraft 1.21.1
 
-If a 1.21.\* patch introduces breaking changes, split further (e.g., `mc/1.21.0-1.21.1` and `mc/1.21.5+`).
+Each branch maintains its own version-specific dependencies and configurations while sharing common codebase.
 
 ### Why git worktree
 
@@ -43,7 +45,7 @@ If a 1.21.\* patch introduces breaking changes, split further (e.g., `mc/1.21.0-
 
 ### Daily workflow
 
-1. Implement and commit in one branch (e.g., `mc/1.21.x`).
+1. Implement and commit in one branch (e.g., `1.21.7`).
 2. Backport/forward-port the same change to other branches using `cherry-pick`:
 
    ```bash
@@ -65,7 +67,7 @@ Create a small script to repeat cherry-picks safely:
 #!/usr/bin/env bash
 set -euo pipefail
 SHA="$1"
-for BR in mc/1.20.1 mc/1.16.5; do
+for BR in 1.21.4 1.21 1.21.1; do
   git fetch origin "$BR"
   git checkout "$BR"
   if ! git cherry-pick -x "$SHA"; then
@@ -83,16 +85,20 @@ Usage: `./backport.sh <commit_sha>`
 Run from each worktree folder to avoid cross-contamination:
 
 ```bash
-# Example: 1.21.x worktree
-cd /Users/andrew/www/take-your-minestream-1.21.x
+# Example: 1.21.7 worktree
+cd /Users/andrew/www/take-your-minestream-1.21.7
 ./gradlew runClient
 
-# Example: 1.20.1 worktree
-cd /Users/andrew/www/take-your-minestream-1.20.1
+# Example: 1.21.4 worktree
+cd /Users/andrew/www/take-your-minestream-1.21.4
 ./gradlew runClient
 
-# Example: 1.16.5 worktree
-cd /Users/andrew/www/take-your-minestream-1.16.5
+# Example: 1.21 worktree
+cd /Users/andrew/www/take-your-minestream-1.21
+./gradlew runClient
+
+# Example: 1.21.1 worktree
+cd /Users/andrew/www/take-your-minestream-1.21.1
 ./gradlew runClient
 ```
 
@@ -125,17 +131,33 @@ Note: The same branch cannot be checked out in two worktrees simultaneously.
 ### CI and releases
 
 - Build each branch in a matrix job; upload separate JARs with correct `gameVersions` on Modrinth.
-- For 1.21.x, try a single artifact targeting `~1.21` if testing confirms compatibility.
-- Tag the repo once (e.g., `vX.Y.Z`); attach artifacts per branch/version line.
+- Each branch builds its own JAR with version-specific naming (e.g., `tyms-1.21.4-1.1.0.jar`)
+- Tag the repo once (e.g., `vX.Y.Z`); attach artifacts per branch/version line
 
 ### IDE tips
 
 - Open each worktree as a separate project window.
 - Assign run configurations per project (fast switching between versions).
-- Use clear log tags (e.g., `[TYMS-121]`, `[TYMS-120]`) to spot version-specific issues quickly.
+- Use clear log tags (e.g., `[TYMS-121.7]`, `[TYMS-121.4]`, `[TYMS-121]`, `[TYMS-121.1]`) to spot version-specific issues quickly.
+
+### Building multiple versions simultaneously
+
+With the updated `build.gradle`, each branch now creates uniquely named JARs:
+
+```bash
+# Build all versions in parallel
+git checkout 1.21.7 && ./gradlew build &  # Creates tyms-1.21.7-1.1.0.jar
+git checkout 1.21.4 && ./gradlew build &  # Creates tyms-1.21.4-1.1.0.jar
+git checkout 1.21   && ./gradlew build &  # Creates tyms-1.21-1.1.0.jar
+git checkout 1.21.1 && ./gradlew build &  # Creates tyms-1.21.1-1.1.0.jar
+wait
+```
+
+All JARs will be available in `build/libs/` without overwriting each other.
 
 ### FAQ
 
 - "Can I use the same branch in two worktrees?" — No.
 - "Can I convert an existing folder into a worktree?" — Create a new worktree and move files if needed; direct conversion isn’t supported.
 - "Do worktrees duplicate the repo on disk?" — No, Git reuses objects; only working files are separate.
+- "How do I manage different Minecraft versions?" — Use separate branches for each version, each with its own dependencies and configurations.
