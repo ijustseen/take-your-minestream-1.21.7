@@ -1,17 +1,15 @@
 {
-	"schemaVersion": 1,
-	"id": "take-your-minestream",
-	"version": "${version}",
-	"name": "Take Your MineStream",
-	"description": "A minecraft modification for streamers, that allows messages from your Twitch chat to be displayed in your game. In-Game Settings: Access configuration screen with key binding (default: ])",
-	"authors": [
-		"ijustseen"
-	],
-	"contact": {
-		"homepage": "https://modrinth.com/mod/take-your-minestream",
-		"sources": "https://github.com/ijustseen/take-your-minestream"
-	},
-  "license": "CC0-1.0",
+  "schemaVersion": 1,
+  "id": "take-your-minestream",
+  "version": "${version}",
+  "name": "Take Your MineStream",
+  "description": "A minecraft modification for streamers, that allows messages from your Twitch chat to be displayed in your game. In-Game Settings: Access configuration screen with key binding (default: ])",
+  "authors": ["ijustseen"],
+  "contact": {
+    "homepage": "https://modrinth.com/mod/take-your-minestream",
+    "sources": "https://github.com/ijustseen/take-your-minestream"
+  },
+  "license": "MIT",
   "icon": "assets/take-your-minestream/icon.png",
   "environment": "*",
   "entrypoints": {
@@ -27,7 +25,7 @@
   ],
   "depends": {
     "fabricloader": ">=0.16.14",
-    "minecraft": "~1.21.7",
+    "minecraft": "~1.21.4",
     "java": ">=21",
     "fabric-api": "*"
   },
